@@ -5,7 +5,7 @@ module.exports = {
   entry: './src/index.tsx',
   devtool: 'inline-source-map',
   output: {
-    path: path.resolve(__dirname, '/dist'),
+    path: path.resolve(__dirname, 'dist'),
     filename: '[name].[contenthash].js',
     asyncChunks: true,
     clean: true,

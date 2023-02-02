@@ -5,19 +5,24 @@
   "main": "index.tsx",
   "scripts": {
     "start": "webpack serve --open --config webpack.dev.js",
-    "build": "webpack --config webpack.prod.js"
+    "build": "webpack --config webpack.prod.js",
+    "build-plugin": "webpack --config webpack.prod.js && node createPlugin.js"
   },
   "author": "alkkas",
   "license": "ISC",
   "dependencies": {
+    "formik": "^2.2.9",
+    "jszip": "^3.10.1",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.8.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.12",
     "@babel/preset-env": "^7.20.2",
     "@babel/preset-react": "^7.18.6",
     "@babel/preset-typescript": "^7.18.6",
+    "@types/core-js": "^2.5.5",
     "@types/react": "^18.0.27",
     "@types/react-dom": "^18.0.10",
     "babel-loader": "^9.1.2",

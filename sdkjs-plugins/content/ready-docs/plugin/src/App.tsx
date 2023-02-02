@@ -1,5 +1,6 @@
-const App = () => {
-  return <h1>hellow world</h1>
-}
+import { RouterProvider } from 'react-router-dom'
+import router from './routes'
 
-export default App
+export default function App() {
+  return <RouterProvider router={router} />
+}

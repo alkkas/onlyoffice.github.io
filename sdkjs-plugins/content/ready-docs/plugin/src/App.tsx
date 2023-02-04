@@ -1,6 +1,9 @@
-import { RouterProvider } from 'react-router-dom'
-import router from './routes'
+import { useState } from 'react'
+import './global.styles.scss'
+import Home from './pages/Home/Home'
+import Login from './pages/Login/Login'
 
 export default function App() {
-  return <RouterProvider router={router} />
+  const [isAuth, setIsAuth] = useState(false)
+  return <main className="container">{isAuth ? <Home /> : <Login />}</main>
 }

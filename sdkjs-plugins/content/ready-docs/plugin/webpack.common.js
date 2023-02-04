@@ -1,5 +1,7 @@
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
+const { create } = require('sass-alias')
 
 module.exports = {
   entry: './src/index.tsx',
@@ -10,9 +12,19 @@ module.exports = {
     asyncChunks: true,
     clean: true,
   },
-
+  resolve: {
+    plugins: [new TsconfigPathsPlugin()],
+  },
   module: {
     rules: [
+      {
+        test: /\.css$/i,
+        use: ['style-loader', 'css-loader'],
+      },
+      {
+        test: /\.s[ac]ss$/i,
+        use: ['style-loader', 'css-loader', 'sass-loader'],
+      },
       {
         test: /\.(t|j)sx?$/,
         exclude: /node_modules/,

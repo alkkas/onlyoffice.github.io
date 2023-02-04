@@ -6,13 +6,17 @@ const zip = new JSzip()
 
 const files = fs.readdirSync(path.resolve(__dirname, 'dist'))
 for (const file of files) {
-  zip.file(path.basename(file), file)
+  const fileBuffer = fs.readFileSync(path.resolve(__dirname, 'dist', file))
+  zip.file(file, fileBuffer)
 }
 
 const static = zip.folder('static')
 const staticFiles = fs.readdirSync(path.resolve(__dirname, '../static'))
 for (const file of staticFiles) {
-  static.file(path.basename(file), file)
+  const fileBuffer = fs.readFileSync(
+    path.resolve(__dirname, '..', 'static', file)
+  )
+  static.file(file, fileBuffer)
 }
 
 const config = fs.readFileSync('../config.json')

@@ -1,5 +1,4 @@
 @import 'styles/normalize';
-@import 'styles/colors';
 
 .container {
   padding: 0 10px;
@@ -8,7 +7,7 @@
 }
 
 .title {
-  font-size: 24px;
+  font-size: var(--l);
   text-align: center;
 }
 
@@ -21,4 +20,13 @@ input,
   display: block;
   padding: 7px 5px;
   height: auto;
+}
+
+:root {
+  //colors
+  --red: red;
+  //font sizes
+  --sm: 11px;
+  --m: 14px;
+  --l: 24px;
 }

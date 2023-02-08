@@ -7,7 +7,7 @@ setLocale({
   },
 })
 const schema = object({
-  email: string().email().required(),
+  login: string().required(),
   password: string().required(),
 })
 

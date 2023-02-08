@@ -1,14 +1,16 @@
 import { Form, Formik } from 'formik'
 import Input from 'components/Input/Input'
-import { ToastContainer, toast, Slide } from 'react-toastify'
+import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import './Login.scss'
 import schema from './loginSchema'
 import { useMutation } from 'react-query'
-import { userLogIn } from 'src/api/api'
+import { userLogIn } from 'api/api'
+import Load from 'components/Load/Load'
 import { useEffect } from 'react'
+
 const initialValues = {
-  email: '',
+  login: '',
   password: '',
 }
 
@@ -18,14 +20,13 @@ export default function Login() {
       toast.error('Упс, произошлая ошибка')
     },
     onSuccess: () => {
-      //set state here later
+      window.location.reload()
     },
   })
 
   const submitForm = (values: typeof initialValues) => {
     logIn.mutate(values)
   }
-
   return (
     <section>
       <h1 className="title">Войдите в систему</h1>
@@ -36,14 +37,15 @@ export default function Login() {
       >
         {({ errors, touched }) => (
           <Form>
-            <Input label="введите email" name="email" type="email" />
+            <Input label="введите email" name="login" type="text" />
             <Input label="введите пароль" name="password" type="password" />
             <button
               className="btn-text-default submit login__button"
               type="submit"
               disabled={
                 Object.keys(errors).length !== 0 ||
-                Object.keys(touched).length === 0
+                Object.keys(touched).length === 0 ||
+                logIn.isLoading
               }
             >
               Отправить
@@ -51,13 +53,7 @@ export default function Login() {
           </Form>
         )}
       </Formik>
-      <ToastContainer
-        position="bottom-center"
-        autoClose={2000}
-        limit={3}
-        hideProgressBar={true}
-        transition={Slide}
-      />
+      {logIn.isLoading && <Load />}
     </section>
   )
 }

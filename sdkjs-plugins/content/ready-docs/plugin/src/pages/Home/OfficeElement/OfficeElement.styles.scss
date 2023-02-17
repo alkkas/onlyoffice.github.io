@@ -4,6 +4,17 @@
 
   }
   &__btn {
-    margin-bottom: 30px;
+    margin: 20px 0 30px;
+  }
+}
+
+
+.element-props {
+  &__input {
+    padding: 10px;
+    width: 100%;
+    display: block;
+    font-size: var(--m);
+    margin: 10px 0;
   }
 }

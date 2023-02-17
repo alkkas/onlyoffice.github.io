@@ -17,7 +17,12 @@
       href="https://onlyoffice.github.io/sdkjs-plugins/v1/plugins.css"
     />
     <script>
-      const Asc = window.Asc
+      ;(function (window, undefined) {
+        window.Asc.plugin.init = function () {}
+        window.Asc.plugin.button = function (id) {
+          this.executeCommand('close', '')
+        }
+      })(window, undefined)
     </script>
     <title>Document</title>
   </head>

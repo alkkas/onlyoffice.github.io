@@ -1,4 +1,5 @@
 import { components, MenuListProps } from 'react-select'
+import './SelectGroup.styles.scss'
 
 const CustomSelectMenuList = (props: MenuListProps<any, false, any>) => {
   return (
@@ -6,7 +7,11 @@ const CustomSelectMenuList = (props: MenuListProps<any, false, any>) => {
       <components.MenuList {...props}>
         {props.children}
 
-        <span>загрузить больше</span>
+        {Array.isArray(props.children) && (
+          <button className="load_more btn-text-default">
+            загрузить больше
+          </button>
+        )}
       </components.MenuList>
     </>
   )

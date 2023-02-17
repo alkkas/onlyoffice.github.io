@@ -9,6 +9,7 @@
     "allowSyntheticDefaultImports": true,
     "moduleResolution": "Node",
     "baseUrl": "./",
+    "lib": ["DOM"],
     "paths": {
       "components/*": ["src/components/*"],
       "pages/*": ["src/pages/*"],

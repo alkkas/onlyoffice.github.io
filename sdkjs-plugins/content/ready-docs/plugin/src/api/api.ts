@@ -14,20 +14,31 @@ const client = axios.create({
   },
 })
 
+//TODO remove jwt token cause it is transferred in header
+client.interceptors.request.use((config) => {
+  if (config.url !== '?class=User&action=auth') {
+    config.transformRequest = [
+      (data) => {
+        data.JWT = localStorage.getItem('access_token')
+        return JSON.stringify(data)
+      },
+    ]
+  }
+  return config
+})
+
 //unauthorized request => clear token => user will be asked to login again
 //if error happens it will be handled by react-query hence do not need try/catch
-
 client.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response.status === '403') {
+    if (error?.response?.status === '403') {
       localStorage.removeItem('access_token')
       window.location.reload()
     }
     return Promise.reject(error)
   }
 )
-
 export const userLogIn = async (values: logInType) => {
   const result = await client.post('?class=User&action=auth', values)
   const token = result.data.Access_token
@@ -37,10 +48,16 @@ export const userLogIn = async (values: logInType) => {
 }
 
 export const getCategories = async (values: categoriesParamsType) => {
-  //TODO remove jwt token cause it is transferred in header
-  const result = await client.post('?class=Category&action=getCategories', {
-    ...values,
-    JWT: localStorage.getItem('access_token'),
-  })
+  const result = await client.post(
+    '?class=Category&action=getCategories',
+    values
+  )
   return result.data.categories
+}
+
+export const getTemplate = async (categoryId: string) => {
+  const result = await client.post('?class=Template&action=getTemplates', {
+    categoryId,
+  })
+  return result.data
 }

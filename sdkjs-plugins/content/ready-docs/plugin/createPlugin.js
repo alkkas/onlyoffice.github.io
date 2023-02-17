@@ -3,7 +3,7 @@ const path = require('path')
 const JSzip = require('jszip')
 
 const zip = new JSzip()
-
+ 
 const files = fs.readdirSync(path.resolve(__dirname, 'dist'))
 for (const file of files) {
   const fileBuffer = fs.readFileSync(path.resolve(__dirname, 'dist', file))

@@ -1,3 +1,5 @@
+import { client } from 'api/api'
+
 export const debounce = (func: (...args: any) => void, time: number) => {
   let timer: NodeJS.Timeout
   return async (...args: any) => {
@@ -9,7 +11,7 @@ export const debounce = (func: (...args: any) => void, time: number) => {
   }
 }
 
-export const getElementParent = (): any => {
+export const getElementParent = () => {
   window.Asc.plugin.callCommand(function () {
     const control = Asc.scope.control
     const oDocument = Api.GetDocument()
@@ -26,4 +28,16 @@ export const getElementParent = (): any => {
       }
     }
   }, false)
+}
+
+export const apiHelper = async (
+  method: 'get' | 'post' | 'put' | 'delete',
+  className: string,
+  action: string,
+  params: { [key: string]: string }
+): Promise<any> => {
+  const result = await client[method](`?class=${className}&action=${action}`, {
+    ...params,
+  })
+  return result.data
 }

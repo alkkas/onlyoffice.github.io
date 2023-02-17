@@ -1,5 +1,7 @@
 @import 'styles/normalize';
 
+
+
 .container {
   padding: 0 10px;
   max-width: 320px;
@@ -22,9 +24,31 @@ input,
   height: auto;
 }
 
+body {
+  font-size: 14px;
+}
+
+input[type="checkbox"].form-control:checked::after {
+  width: 5px;
+  height: 9px;
+}
 :root {
   //colors
-  --red: red;
+  --light-red: rgba(255, 99, 71, 0.5);
+  --light-orange: rgb(255, 165, 0, 0.5);
+  --light-yellow: rgba(255, 255, 0, 0.5);
+  --light-green: rgba(38, 227, 38, 0.5);
+  --light-blue: rgb(38, 132, 255, 0.5);
+  --light-pink: rgba(222, 28, 196, 0.5);
+
+  --red: rgb(255, 99, 71);
+  --orange: rgb(255, 165, 0);
+  --yellow: rgb(255, 255, 0);
+  --green: rgb(38, 227, 38);
+  --blue: rgb(38, 132, 255);
+  --pink: rgb(222, 28, 196);
+  --white: #fff;
+  --dark-grey: #7d858c;
   //font sizes
   --sm: 11px;
   --m: 14px;

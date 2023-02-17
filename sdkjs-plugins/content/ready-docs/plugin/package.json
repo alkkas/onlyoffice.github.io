@@ -5,8 +5,7 @@
   "main": "index.tsx",
   "scripts": {
     "start": "webpack serve --open --config webpack.dev.js",
-    "build": "webpack --config webpack.prod.js",
-    "build-plugin": "webpack --config webpack.prod.js && node createPlugin.js"
+    "build": "webpack --config webpack.prod.js && node createPlugin.js"
   },
   "author": "alkkas",
   "license": "ISC",
@@ -36,6 +35,7 @@
     "@types/uuid": "^9.0.0",
     "babel-loader": "^9.1.2",
     "css-loader": "^6.7.3",
+    "eslint": "^8.41.0",
     "html-webpack-plugin": "^5.5.0",
     "jszip": "^3.10.1",
     "prettier": "^2.8.3",

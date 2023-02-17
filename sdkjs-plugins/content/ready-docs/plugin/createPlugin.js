@@ -3,20 +3,20 @@ const path = require('path')
 const JSzip = require('jszip')
 
 const zip = new JSzip()
- 
+
 const files = fs.readdirSync(path.resolve(__dirname, 'dist'))
 for (const file of files) {
   const fileBuffer = fs.readFileSync(path.resolve(__dirname, 'dist', file))
   zip.file(file, fileBuffer)
 }
 
-const static = zip.folder('static')
+const staticFolder = zip.folder('static')
 const staticFiles = fs.readdirSync(path.resolve(__dirname, '../static'))
 for (const file of staticFiles) {
   const fileBuffer = fs.readFileSync(
     path.resolve(__dirname, '..', 'static', file)
   )
-  static.file(file, fileBuffer)
+  staticFolder.file(file, fileBuffer)
 }
 
 const config = fs.readFileSync('../config.json')
@@ -31,5 +31,5 @@ zip
 
     fs.writeFileSync('../readydocs.plugin', archive)
     fs.unlinkSync('../readydocs.zip')
-    console.log('\x1b[42m', 'create readydocs.plugin', '\x1b[0m')
+    console.log('create readydocs.plugin')
   })

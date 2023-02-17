@@ -15,12 +15,12 @@ const OfficeElement = () => {
       // parameters should be passed throw Asc.scope obj
       // for more info: https://api.onlyoffice.com/plugin/scope
       // this method is vulnerable to bugs, hope it will be fixed :(
-
       Asc.scope.control = control
       Asc.scope.parent = undefined
       getElementParent()
       setPropsIsActive(true)
     }
+
     window.Asc.plugin.event_onBlurContentControl = (control: any) => {
       setPropsIsActive(false)
     }

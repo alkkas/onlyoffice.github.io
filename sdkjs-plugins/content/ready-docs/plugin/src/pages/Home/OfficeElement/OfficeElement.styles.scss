@@ -8,8 +8,18 @@
   }
 }
 
+.warning-msg {
+  color: var(--orange);
+  font-size: 13px;
+  margin: 10px 0;
+}
 
 .element-props {
+  &__insert-checkbox {
+    display: flex;
+    gap: 5px;
+    margin: 10px 0 15px;
+  }
   &__input {
     padding: 10px;
     width: 100%;
@@ -17,4 +27,22 @@
     font-size: var(--m);
     margin: 10px 0;
   }
+  &__select {
+    margin-bottom: 10px;
+  }
+  &__option {
+    &:hover {
+      opacity: 0.6;
+    }
+    &--selected {
+      background: var(--blue);
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
 }
+
+
+
+

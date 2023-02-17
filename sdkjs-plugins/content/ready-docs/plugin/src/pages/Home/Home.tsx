@@ -1,22 +1,22 @@
-import './Home.styles.scss'
 import { getCategories, getTemplate } from 'api/api'
-import { useEffect, useState } from 'react'
+import Select from 'components/Select'
+import OfficeElement from 'pages/Home/OfficeElement/OfficeElement'
+import { createContext, useEffect, useMemo, useState } from 'react'
 import { useMutation } from 'react-query'
 import { toast } from 'react-toastify'
-import Select from 'components/Select'
+import './Home.styles.scss'
 import CustomSelectMenuList from './SelectGroup'
-import OfficeElement from 'pages/Home/OfficeElement/OfficeElement'
+
 export interface categoriesParamsType {
   offset: number
   count: number
 }
 
 const ParamsDefaultValues: categoriesParamsType = { offset: 0, count: 15 }
+export const TemplateIdContext = createContext<string[]>([])
 
 export default function Home() {
   const [categoriesParams, setCategoriesParams] = useState(ParamsDefaultValues)
-  const [categoriesData, setCategoriesData] = useState([])
-  const [templateData, setTemplateData] = useState([])
 
   const categories = useMutation(getCategories, {
     onError: () => {
@@ -25,7 +25,6 @@ export default function Home() {
       )
     },
   })
-
   const template = useMutation(getTemplate, {
     onError: () => {
       toast.error(
@@ -33,14 +32,16 @@ export default function Home() {
       )
     },
   })
+  const currentTemplateIds = useMemo(
+    () => template?.data?.map((template: any) => template.Id),
+    [template.data]
+  )
 
-  const loadTemplate = async (option: any) => {
-    const data = await template.mutateAsync(option.Id)
-    setTemplateData(data)
+  const loadTemplate = (option: any) => {
+    template.mutate(option.Id)
   }
-  const getCategoriesFunc = async () => {
-    const data = await categories.mutateAsync(categoriesParams)
-    setCategoriesData(data)
+  const getCategoriesFunc = () => {
+    categories.mutate(categoriesParams)
   }
 
   useEffect(() => {
@@ -48,19 +49,21 @@ export default function Home() {
   }, [])
 
   const logOut = () => {
-    window.localStorage.removeItem('access_token')
-    window.location.reload()
+    localStorage.removeItem('access_token')
+    location.reload()
   }
 
   return (
     <div>
-      <OfficeElement />
-
+      <TemplateIdContext.Provider value={currentTemplateIds}>
+        <OfficeElement />
+      </TemplateIdContext.Provider>
       {/*//TODO create pagination*/}
       <Select
-        options={categoriesData}
+        options={categories.data}
         getOptionLabel={(option) => option.Title}
         isLoading={categories.isLoading}
+        getOptionValue={(option) => option.Id}
         onChange={loadTemplate}
         components={{ MenuList: CustomSelectMenuList }}
         placeholder="категории..."
@@ -69,9 +72,10 @@ export default function Home() {
       <Select
         placeholder="шаблоны..."
         className="home__select"
-        options={templateData}
-        getOptionLabel={(option) => option.Title}
+        options={template.data}
+        getOptionLabel={(option) => option.Filename}
         isLoading={template.isLoading}
+        getOptionValue={(option) => option.Id}
       />
 
       <button onClick={logOut} className="btn-text-default logout-btn">

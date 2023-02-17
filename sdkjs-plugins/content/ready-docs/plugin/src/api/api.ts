@@ -1,12 +1,13 @@
 import axios from 'axios'
 import { categoriesParamsType } from 'pages/Home/Home'
+import { apiHelper } from 'utils/utils'
 
 interface logInType {
   login: string
   password: string
 }
 
-const client = axios.create({
+export const client = axios.create({
   baseURL: 'https://gotdoc.nord.su/api/',
   timeout: 7000,
   headers: {
@@ -14,7 +15,7 @@ const client = axios.create({
   },
 })
 
-//TODO remove jwt token cause it is transferred in header
+//TODO remove jwt token cause it is transferred not in header
 client.interceptors.request.use((config) => {
   if (config.url !== '?class=User&action=auth') {
     config.transformRequest = [
@@ -27,18 +28,19 @@ client.interceptors.request.use((config) => {
   return config
 })
 
-//unauthorized request => clear token => user will be asked to login again
-//if error happens it will be handled by react-query hence do not need try/catch
+// unauthorized request => clear token => user will be asked to login again
+// if error happens it will be handled by react-query hence do not need try/catch
 client.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error?.response?.status === '403') {
       localStorage.removeItem('access_token')
-      window.location.reload()
+      location.reload()
     }
     return Promise.reject(error)
   }
 )
+
 export const userLogIn = async (values: logInType) => {
   const result = await client.post('?class=User&action=auth', values)
   const token = result.data.Access_token
@@ -56,8 +58,9 @@ export const getCategories = async (values: categoriesParamsType) => {
 }
 
 export const getTemplate = async (categoryId: string) => {
-  const result = await client.post('?class=Template&action=getTemplates', {
-    categoryId,
-  })
-  return result.data
+  return apiHelper('post', 'Template', 'getTemplates', { categoryId })
+}
+
+export const getElements = async (TemplateId: string) => {
+  return apiHelper('post', 'Template', 'getVariables', { TemplateId })
 }

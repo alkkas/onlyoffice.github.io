@@ -28,7 +28,14 @@ module.exports = {
       },
       {
         test: /\.s[ac]ss$/i,
-        use: ['style-loader', 'css-loader', 'sass-loader'],
+        use: [
+          {
+            loader: 'style-loader',
+            options: { insert: 'body' },
+          },
+          'css-loader',
+          'sass-loader',
+        ],
       },
       {
         test: /\.(t|j)sx?$/,

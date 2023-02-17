@@ -1,0 +1,50 @@
+.checkbox {
+  display: flex;
+  position: relative;
+  display: inline-block;
+  &__input {
+    display: none;
+  }
+  &__btn {
+    padding: 7px;
+    border-radius: 0;
+    border: 1px solid var(--dark-grey);
+    background: none;
+    cursor: pointer;
+    transition: 0.2s ease all;
+    &:nth-child(2) {
+      border-right: 0;
+      color: var(--white);
+    }
+    &:nth-child(3) {
+      border-left: 0;
+      color: inherit;
+
+
+    }
+  }
+  &::after {
+    content: "";
+    display: block;
+    width: 50%;
+    height: 100%;
+    background:var(--dark-grey) ;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    transition: 0.2s ease all;
+  }
+  &--sometime {
+    .checkbox__btn:nth-child(2) {
+      color: inherit;
+    }
+    .checkbox__btn:nth-child(3) {
+      color: var(--white);
+    }
+  }
+  &--sometime::after {
+    left: 50%;
+
+  }
+}

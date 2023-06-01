@@ -5,9 +5,12 @@ import { RefAttributes } from 'react'
 export default (props: StateManagerProps<any, false, GroupBase<any>>) => {
   return (
     <Select
-      {...props}
+      styles={{
+        option: (baseStyles, _) => ({ ...baseStyles, wordBreak: 'break-word' }),
+      }}
       loadingMessage={() => 'Загрузка...'}
       noOptionsMessage={() => 'Пусто :('}
+      {...props}
     />
   )
 }

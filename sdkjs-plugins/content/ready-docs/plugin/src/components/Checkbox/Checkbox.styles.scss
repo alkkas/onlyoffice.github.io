@@ -1,5 +1,4 @@
 .checkbox {
-  display: flex;
   position: relative;
   display: inline-block;
   &__input {
@@ -35,7 +34,7 @@
     z-index: -1;
     transition: 0.2s ease all;
   }
-  &--sometime {
+  &--active {
     .checkbox__btn:nth-child(2) {
       color: inherit;
     }
@@ -43,7 +42,7 @@
       color: var(--white);
     }
   }
-  &--sometime::after {
+  &--active::after {
     left: 50%;
 
   }

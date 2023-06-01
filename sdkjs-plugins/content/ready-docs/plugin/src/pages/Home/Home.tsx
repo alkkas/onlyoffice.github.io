@@ -6,6 +6,8 @@ import { useMutation } from 'react-query'
 import { toast } from 'react-toastify'
 import './Home.styles.scss'
 import CustomSelectMenuList from './SelectGroup'
+import Button from 'components/Button'
+import { DocumentItem } from 'types/types'
 
 export interface categoriesParamsType {
   offset: number
@@ -13,7 +15,7 @@ export interface categoriesParamsType {
 }
 
 const ParamsDefaultValues: categoriesParamsType = { offset: 0, count: 15 }
-export const TemplateIdContext = createContext<string[]>([])
+export const TemplateContext = createContext<DocumentItem[]>([])
 
 export default function Home() {
   const [categoriesParams, setCategoriesParams] = useState(ParamsDefaultValues)
@@ -32,10 +34,6 @@ export default function Home() {
       )
     },
   })
-  const currentTemplateIds = useMemo(
-    () => template?.data?.map((template: any) => template.Id),
-    [template.data]
-  )
 
   const loadTemplate = (option: any) => {
     template.mutate(option.Id)
@@ -55,10 +53,11 @@ export default function Home() {
 
   return (
     <div>
-      <TemplateIdContext.Provider value={currentTemplateIds}>
+      <TemplateContext.Provider value={template.data}>
         <OfficeElement />
-      </TemplateIdContext.Provider>
-      {/*//TODO create pagination*/}
+      </TemplateContext.Provider>
+      {/*TODO create pagination*/}
+      {/*TODO mb remove documents from page at all because that don't play part in flow process*/}
       <Select
         options={categories.data}
         getOptionLabel={(option) => option.Title}
@@ -70,17 +69,16 @@ export default function Home() {
         className="home__select"
       />
       <Select
-        placeholder="шаблоны..."
+        placeholder="документы..."
         className="home__select"
         options={template.data}
         getOptionLabel={(option) => option.Filename}
         isLoading={template.isLoading}
         getOptionValue={(option) => option.Id}
       />
-
-      <button onClick={logOut} className="btn-text-default logout-btn">
+      <Button onClick={logOut} type="submit">
         Выйти
-      </button>
+      </Button>
     </div>
   )
 }

@@ -4,7 +4,7 @@
 
 .container {
   padding: 0 10px;
-  max-width: 320px;
+  max-width: 340px;
   margin: 0 auto;
 }
 
@@ -26,6 +26,13 @@ input,
 
 body {
   font-size: 14px;
+}
+
+.input {
+  font-size: 14px;
+  padding: 12px 7px;
+  min-height: 38px;
+  border-radius: 4px;
 }
 
 input[type="checkbox"].form-control:checked::after {
@@ -50,7 +57,7 @@ input[type="checkbox"].form-control:checked::after {
   --white: #fff;
   --dark-grey: #7d858c;
   //font sizes
-  --sm: 11px;
+  --sm: 12px;
   --m: 14px;
   --l: 24px;
 }

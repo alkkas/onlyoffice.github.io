@@ -10,16 +10,17 @@ const Checkbox = ({ onChange, checked, style }: CheckboxType) => {
   return (
     <label
       htmlFor="inputShow"
-      className={`checkbox ${checked ? 'checkbox--sometime' : ''}`}
-      onClick={onChange}
+      className={`checkbox ${checked ? 'checkbox--active' : ''}`}
       style={style}
+      onClick={onChange}
     >
       <input
         type="checkbox"
-        name="show"
+        name="inputShow"
         id="inputShow"
         className="checkbox__input"
         checked={checked}
+        onChange={onChange}
       />
       <button className="checkbox__btn">всегда</button>
       <button className="checkbox__btn">иногда</button>

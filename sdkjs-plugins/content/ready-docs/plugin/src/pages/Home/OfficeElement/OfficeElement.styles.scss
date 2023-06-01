@@ -6,6 +6,15 @@
   &__btn {
     margin: 20px 0 30px;
   }
+  &__fieldset {
+    display: block;
+    min-width: 0;
+    border: 0;
+    padding: 0;
+    &:disabled {
+      opacity: 0.6;
+    }
+  }
 }
 
 .warning-msg {
@@ -18,7 +27,7 @@
   &__insert-checkbox {
     display: flex;
     gap: 5px;
-    margin: 10px 0 15px;
+    margin: 10px 0 ;
   }
   &__input {
     padding: 10px;

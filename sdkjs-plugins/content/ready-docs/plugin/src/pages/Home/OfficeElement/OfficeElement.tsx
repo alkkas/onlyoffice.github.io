@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { useEffect, useState } from 'react'
 import ElementProps from 'pages/Home/OfficeElement/ElementProps'
 import { getElementParent } from 'utils/utils'
+import Button from 'components/Button'
 
 const OfficeElement = () => {
   const [propsIsActive, setPropsIsActive] = useState(false)
@@ -36,12 +37,9 @@ const OfficeElement = () => {
     <>
       {propsIsActive && <ElementProps />}
       <ElementProps />
-      <button
-        className="btn-text-default office-element__btn"
-        onClick={addElement}
-      >
+      <Button className="office-element__btn submit" onClick={addElement}>
         Создать элемент
-      </button>
+      </Button>
     </>
   )
 }

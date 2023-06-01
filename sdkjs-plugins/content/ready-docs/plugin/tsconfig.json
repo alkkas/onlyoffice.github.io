@@ -15,7 +15,8 @@
       "pages/*": ["src/pages/*"],
       "static/*": ["src/static/*"],
       "api/*": ["src/api/*"],
-      "utils/*": ["src/utils/*"]
+      "utils/*": ["src/utils/*"],
+      "types/*": ["src/types/*"]
     }
   }
 }

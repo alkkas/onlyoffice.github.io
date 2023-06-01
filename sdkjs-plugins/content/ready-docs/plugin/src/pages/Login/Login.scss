@@ -1,3 +1,8 @@
-.login__button {
-  margin: 0 auto 10px;
+.login {
+  &__input {
+    max-width: 200px;
+  }
+  &__button {
+    margin: 0 auto 10px;
+  }
 }

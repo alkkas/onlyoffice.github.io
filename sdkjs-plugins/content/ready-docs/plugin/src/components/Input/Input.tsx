@@ -12,7 +12,11 @@ const Input = ({ label, ...props }: inputTypes & FieldAttributes<any>) => {
       <label className="input__label" htmlFor={props.id || props.name}>
         {label}
       </label>
-      <input className="form-control input" {...field} {...props} />
+      <input
+        className="form-control input input--login"
+        {...field}
+        {...props}
+      />
       {meta.touched && meta.error && (
         <span className="input__error">{meta.error}</span>
       )}

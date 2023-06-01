@@ -4,62 +4,69 @@ import CreatableSelect from 'react-select/creatable'
 import { useMutation } from 'react-query'
 import { getElements } from 'api/api'
 import { useContext, useEffect } from 'react'
-import { TemplateIdContext } from 'pages/Home/Home'
-import Text from 'pages/Home/OfficeElement/elementComponents/Text'
-import InputField from 'pages/Home/OfficeElement/elementComponents/InputField'
-import RadioInput from 'pages/Home/OfficeElement/elementComponents/RadioInput'
-import CheckboxInput from 'pages/Home/OfficeElement/elementComponents/CheckboxInput'
-import UnfixedList from 'pages/Home/OfficeElement/elementComponents/UnfixedList'
-import ElementCompHOC from 'pages/Home/OfficeElement/ElementCompHOC'
+import { TemplateContext } from 'pages/Home/Home'
+import ElementCompHOC from './ElementCompHOC'
+import { selectFlagsProps, typeOptions } from './ElementPropsStatic'
+import { Element, ElementStruct } from 'types/types'
 
-//new api should be not number but strings
-//input text radio checkbox complexList
-
-export type typeOptionsType = {
-  type: 4 | 'text' | 'radio' | 'checkbox' | 'complexList'
-  label: string
-  Component: () => JSX.Element
+// TODO MAYBE IN FUTURE CREATE TEXTAREA FIELD FOR CHOOSING AND ADDING NEW FLAGS
+// TODO element.Struct.case exist for every element should be existing only for input elements
+// const Input = (props: InputProps<any, true>) => {
+//   console.log(props)
+//   return (
+//     <>
+//       {/*@ts-ignore*/}
+//       <textarea {...props}>{props.value}</textarea>
+//     </>
+//   )
+// }
+const defaultElementStruct: ElementStruct = {
+  typeId: 4,
+  case: 0,
+  struct: [],
+  docs: [],
+  displayConditions: [],
+  isHidden: false,
+  parentName: '',
 }
 
-const typeOptions: typeOptionsType[] = [
-  { type: 4, label: 'Поле для ввода', Component: InputField },
-  { type: 'text', label: 'Текст', Component: Text },
-  { type: 'radio', label: 'Выбор', Component: RadioInput },
-  { type: 'checkbox', label: 'Список', Component: CheckboxInput },
-  {
-    type: 'complexList',
-    label: 'Нефиксированный список',
-    Component: UnfixedList,
-  },
-]
-
-const colors = {
-  4: 'light-orange',
-  5: 'light-green',
-  6: 'light-blue',
-  7: 'light-yellow',
-  8: 'light-red',
-  9: 'light-pink',
+type ElementStructContext = {
+  data: ElementStruct
+  setData: (
+    data: ElementStruct | ((data: ElementStruct) => ElementStruct)
+  ) => void
 }
 
-export const ElementContext = createContext<any>({})
+export const ElementContext = createContext<ElementStructContext>({
+  data: defaultElementStruct,
+  setData: () => undefined,
+})
+
+export const FlagsContext = createContext([])
 
 export default () => {
-  const templateIds = useContext(TemplateIdContext)
-  const [elementsData, setElementsData] = useState<any[]>([])
+  const templates = useContext(TemplateContext)
+  const templateIds = useMemo(
+    () => templates?.map((template) => template.Id),
+    [templates]
+  )
+  const [elementsData, setElementsData] = useState<Element[]>([])
   const [noOptionsMsg, setNoOptionsMsg] = useState('Пусто :(')
-  const [selectedType, setSelectedType] = useState<any>(typeOptions[0])
-  const [elementStruct, setElementStruct] = useState<any>({})
+  const [elementStruct, setElementStruct] = useState(defaultElementStruct)
+  const elementStructType = useMemo(
+    () => typeOptions.find((option) => option.type === elementStruct.typeId),
+    [elementStruct.typeId]
+  )
 
   const ElementComp = useMemo(() => {
     const typeOption = typeOptions.find(
-      (option) => option.type === selectedType.type
+      (option) => option.type === elementStructType.type
     )
     if (typeOption) {
       return ElementCompHOC(typeOption.Component, typeOption.type)
     }
     return () => <></>
-  }, [selectedType])
+  }, [elementStructType])
 
   const elements = useMutation(getElements, {
     onSuccess: (data) => {
@@ -68,10 +75,15 @@ export default () => {
         for (const item of data) {
           // TODO why type 5 is excluded?
           // TODO why i compare titles?
+          // I compare titles because there is no id. Unique elements is determined by title
           if (
             !prevData.find((i: any) => i.Title === item.Title) &&
             item.Type !== '5'
           ) {
+            // TODO item.Struct string or object should be only object
+            if (typeof item.Struct === 'string') {
+              item.Struct = JSON.parse(item.Struct)
+            }
             newValues.push(item)
           }
         }
@@ -82,6 +94,7 @@ export default () => {
       setNoOptionsMsg('В данном шаблоне нет элементов!')
     },
   })
+
   useEffect(() => {
     if (templateIds?.length) {
       for (const id of templateIds) {
@@ -92,6 +105,7 @@ export default () => {
       setElementsData([])
     }
   }, [elements.mutate, templateIds])
+  console.log(elementStruct)
   return (
     <>
       <h2 className="office-element__title">Свойства элемента:</h2>
@@ -100,47 +114,36 @@ export default () => {
           Выберите категорию для редактирования элемента!
         </p>
       )}
-      <CreatableSelect
-        placeholder="Название элемента"
-        loadingMessage={() => 'Загрузка...'}
-        noOptionsMessage={() => noOptionsMsg}
-        options={elementsData}
-        getOptionLabel={(option) => option.Title}
-        getOptionValue={(option) => option.Id}
-        onChange={(option) => setElementStruct(JSON.parse(option.Struct))}
-        className="element-props__select"
-        isDisabled={!templateIds?.length}
-        styles={{
-          option: (base, state) => ({
-            ...base,
-            background: `var(--${
-              colors[state.data.Type as keyof typeof colors]
-            })`,
-          }),
-        }}
-        classNames={{
-          option: ({ isSelected }) => {
-            return `element-props__option ${
-              isSelected && 'element-props__option--selected'
-            }`
-          },
-        }}
-      />
-
-      <Select
-        placeholder="тип элемента"
-        options={typeOptions}
-        defaultValue={typeOptions.find((option) => option.type === 'input')}
-        getOptionValue={(option) => option.type}
-        onChange={(option) => setSelectedType(option)}
-        isDisabled={!templateIds?.length}
-      />
-
-      <ElementContext.Provider
-        value={{ data: elementStruct, setData: setElementStruct }}
+      <fieldset
+        className="office-element__fieldset"
+        disabled={!templateIds?.length}
       >
-        <ElementComp />
-      </ElementContext.Provider>
+        <CreatableSelect
+          noOptionsMessage={() => noOptionsMsg}
+          options={elementsData}
+          className="element-props__select"
+          onChange={(option) => setElementStruct(option.Struct)}
+          {...selectFlagsProps}
+        />
+
+        <p style={{ marginBottom: 5 }}>Тип Элемента:</p>
+        <Select
+          options={typeOptions}
+          value={elementStructType}
+          onChange={(option) =>
+            setElementStruct((prev) => ({ ...prev, typeId: option.type }))
+          }
+          getOptionValue={(option) => option.type}
+          isSearchable={false}
+        />
+        <FlagsContext.Provider value={elementsData}>
+          <ElementContext.Provider
+            value={{ data: elementStruct, setData: setElementStruct }}
+          >
+            <ElementComp />
+          </ElementContext.Provider>
+        </FlagsContext.Provider>
+      </fieldset>
     </>
   )
 }

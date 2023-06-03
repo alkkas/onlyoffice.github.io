@@ -1,5 +1,4 @@
-import Button from 'components/Button'
-import ExtractedConditions from 'pages/Home/OfficeElement/elementsMisc/ExtractedConditions'
+import ExtractedConditions from 'pages/Home/OfficeElement/elementsMisc/ExtractedConditions/ExtractedConditions'
 
 const Document = () => {
   return (

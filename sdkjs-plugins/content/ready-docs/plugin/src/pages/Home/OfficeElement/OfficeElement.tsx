@@ -3,6 +3,7 @@ import ElementProps from 'pages/Home/OfficeElement/ElementProps'
 import { useEffect, useState } from 'react'
 import { getElementParent } from 'utils/utils'
 import { v4 as uuid } from 'uuid'
+
 import './OfficeElement.styles.scss'
 
 const OfficeElement = () => {

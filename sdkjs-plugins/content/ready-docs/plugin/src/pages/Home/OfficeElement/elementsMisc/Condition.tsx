@@ -1,17 +1,27 @@
 import Checkbox from 'components/Checkbox/Checkbox'
 import { ElementStructContext } from 'pages/Home/OfficeElement/ElementProps'
-import { useContext, useMemo, useState } from 'react'
-import ExtractedConditions from './ExtractedConditions'
+import { useContext } from 'react'
+import { v4 as uuid } from 'uuid'
+import ExtractedConditions from './ExtractedConditions/ExtractedConditions'
 
 import './Condition.styles.scss'
 
 const Condition = () => {
   const elementStruct = useContext(ElementStructContext)
-  const isConditionsExist = useMemo(
-    () => !!elementStruct.data.displayConditions.length,
-    [elementStruct.data]
-  )
-  const [isShow, setIsShow] = useState(isConditionsExist)
+  const isConditionsExist = !!elementStruct.data.displayConditions.length
+
+  const changeConditionValue = () => {
+    if (isConditionsExist) {
+      elementStruct.setData((prev) => ({ ...prev, displayConditions: [] }))
+    } else {
+      elementStruct.setData((prev) => ({
+        ...prev,
+        displayConditions: [
+          { elementName: null, operatorType: 0, value: '', id: uuid() },
+        ],
+      }))
+    }
+  }
 
   return (
     <div style={{ margin: '15px 0' }}>
@@ -19,13 +29,11 @@ const Condition = () => {
         Отображать:
         <Checkbox
           style={{ marginLeft: '10px' }}
-          onChange={() => setIsShow((prev) => !prev)}
-          checked={isShow || isConditionsExist}
+          onChange={changeConditionValue}
+          checked={isConditionsExist}
         />
       </label>
-      {(isShow || isConditionsExist) && (
-        <ExtractedConditions type="condition" />
-      )}
+      {isConditionsExist && <ExtractedConditions type="condition" />}
     </div>
   )
 }

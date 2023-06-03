@@ -1,0 +1,19 @@
+.radio {
+  &-box {
+    display: flex;
+    gap: 5px;
+  }
+  &-items {
+    margin-top: 10px;
+  }
+  &__item {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px;
+    background: var(--dark-grey);
+    color: var(--white);
+    margin: 0 10px 10px 0;
+    border-radius: 2px;
+  }
+}

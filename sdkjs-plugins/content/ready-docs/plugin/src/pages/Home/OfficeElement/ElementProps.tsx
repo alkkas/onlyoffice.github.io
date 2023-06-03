@@ -7,7 +7,7 @@ import { useMutation } from 'react-query'
 import CreatableSelect from 'react-select/creatable'
 import { Element, ElementStruct } from 'types/types'
 import ElementCompHOC from './ElementCompHOC'
-import { selectFlagsProps, typeOptions } from './ElementPropsStatic'
+import { selectElementsProps, typeOptions } from './ElementPropsStatic'
 // TODO MAYBE IN FUTURE CREATE TEXTAREA FIELD FOR CHOOSING AND ADDING NEW FLAGS
 // TODO element.Struct.case exist for every element should be existing only for input elements
 // const Input = (props: InputProps<any, true>) => {
@@ -104,7 +104,6 @@ export default () => {
       setElementsData([])
     }
   }, [elements.mutate, templateIds])
-  console.log(elementStruct)
   return (
     <>
       <h2 className="office-element__title">Свойства элемента:</h2>
@@ -122,7 +121,7 @@ export default () => {
           options={elementsData}
           className="element-props__select"
           onChange={(option) => setElementStruct(option.Struct)}
-          {...selectFlagsProps}
+          {...selectElementsProps}
         />
 
         <p style={{ marginBottom: 5 }}>Тип Элемента:</p>

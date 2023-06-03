@@ -1,17 +1,15 @@
-//new api should be not number but strings
+import InputField from 'pages/Home/OfficeElement/elementComponents/InputField'
+import RadioAndCheckbox from 'pages/Home/OfficeElement/elementComponents/RadioAndCheckbox/RadioAndChecxbox'
+import UnfixedList from 'pages/Home/OfficeElement/elementComponents/UnfixedList'
+import { v4 as uuid } from 'uuid'
+
+//TODO new api should be not number but strings
 //input text radio checkbox complexList
 // 4 = input
 // 5 = text
 // 6 = radio
 // 7 = checkbox
 // 8 = complexList
-import InputField from 'pages/Home/OfficeElement/elementComponents/InputField'
-import Text from 'pages/Home/OfficeElement/elementComponents/Text'
-import RadioInput from 'pages/Home/OfficeElement/elementComponents/RadioInput'
-import CheckboxInput from 'pages/Home/OfficeElement/elementComponents/CheckboxInput'
-import UnfixedList from 'pages/Home/OfficeElement/elementComponents/UnfixedList'
-import { v4 as uuid } from 'uuid'
-
 export type typeOptionsType = {
   type: 4 | 5 | 6 | 7 | 8
   label: string
@@ -20,9 +18,9 @@ export type typeOptionsType = {
 
 export const typeOptions: typeOptionsType[] = [
   { type: 4, label: 'Поле для ввода', Component: InputField },
-  { type: 5, label: 'Текст', Component: Text },
-  { type: 6, label: 'Выбор', Component: RadioInput },
-  { type: 7, label: 'Список', Component: CheckboxInput },
+  { type: 5, label: 'Текст', Component: () => <></> },
+  { type: 6, label: 'Выбор', Component: RadioAndCheckbox },
+  { type: 7, label: 'Список', Component: RadioAndCheckbox },
   {
     type: 8,
     label: 'Нефиксированный список',
@@ -38,7 +36,7 @@ export const colors = {
   9: 'light-pink',
 }
 
-export const selectFlagsProps = {
+export const selectElementsProps = {
   placeholder: 'Название элемента',
   loadingMessage: () => 'Загрузка...',
   getOptionLabel: (option: any) => option.Title,

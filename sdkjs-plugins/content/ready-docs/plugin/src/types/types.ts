@@ -19,7 +19,7 @@ interface ConditionCommon {
 
 export interface ElementStructCondition extends ConditionCommon {}
 
-export interface DocumentConditions extends ConditionCommon {
+export interface DocumentCondition extends ConditionCommon {
   docName: string
 }
 
@@ -30,7 +30,7 @@ interface Entity {
 export interface ElementStruct {
   case: 0 | 1 | 2 | 3 | 4 | 5
   displayConditions: ElementStructCondition[]
-  docs: DocumentConditions[]
+  docs: DocumentCondition[]
   isHidden: boolean
   parentName: string
   struct: string[]

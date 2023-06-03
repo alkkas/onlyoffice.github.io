@@ -37,7 +37,7 @@ export default function ElementCompHOC(
         <Element />
 
         <Condition />
-        <Document />
+        {type !== 5 && <Document />}
       </>
     )
   }

@@ -1,7 +1,5 @@
 @import 'styles/normalize';
 
-
-
 .container {
   padding: 0 10px;
   max-width: 340px;
@@ -35,7 +33,7 @@ body {
   border-radius: 4px;
 }
 
-input[type="checkbox"].form-control:checked::after {
+input[type='checkbox'].form-control:checked::after {
   width: 5px;
   height: 9px;
 }

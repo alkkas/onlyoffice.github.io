@@ -1,14 +1,13 @@
-import { createContext, useMemo, useState } from 'react'
-import Select from 'components/Select'
-import CreatableSelect from 'react-select/creatable'
-import { useMutation } from 'react-query'
 import { getElements } from 'api/api'
-import { useContext, useEffect } from 'react'
+import Button from 'components/Button'
+import Select from 'components/Select'
 import { TemplateContext } from 'pages/Home/Home'
+import { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import { useMutation } from 'react-query'
+import CreatableSelect from 'react-select/creatable'
+import { Element, ElementStruct } from 'types/types'
 import ElementCompHOC from './ElementCompHOC'
 import { selectFlagsProps, typeOptions } from './ElementPropsStatic'
-import { Element, ElementStruct } from 'types/types'
-
 // TODO MAYBE IN FUTURE CREATE TEXTAREA FIELD FOR CHOOSING AND ADDING NEW FLAGS
 // TODO element.Struct.case exist for every element should be existing only for input elements
 // const Input = (props: InputProps<any, true>) => {
@@ -37,12 +36,12 @@ type ElementStructContext = {
   ) => void
 }
 
-export const ElementContext = createContext<ElementStructContext>({
+export const ElementStructContext = createContext<ElementStructContext>({
   data: defaultElementStruct,
   setData: () => undefined,
 })
 
-export const FlagsContext = createContext([])
+export const ElementsContext = createContext<Element[]>([])
 
 export default () => {
   const templates = useContext(TemplateContext)
@@ -136,13 +135,16 @@ export default () => {
           getOptionValue={(option) => option.type}
           isSearchable={false}
         />
-        <FlagsContext.Provider value={elementsData}>
-          <ElementContext.Provider
+        <ElementsContext.Provider value={elementsData}>
+          <ElementStructContext.Provider
             value={{ data: elementStruct, setData: setElementStruct }}
           >
             <ElementComp />
-          </ElementContext.Provider>
-        </FlagsContext.Provider>
+          </ElementStructContext.Provider>
+        </ElementsContext.Provider>
+        <Button className="submit" style={{ marginTop: 20 }}>
+          Сохранить изменения
+        </Button>
       </fieldset>
     </>
   )

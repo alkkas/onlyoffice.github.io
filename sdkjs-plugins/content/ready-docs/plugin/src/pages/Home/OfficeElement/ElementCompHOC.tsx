@@ -1,15 +1,15 @@
-import React, { useContext, useMemo } from 'react'
+import { ElementStructContext } from 'pages/Home/OfficeElement/ElementProps'
+import React, { useContext } from 'react'
+import { typeOptionsType } from './ElementPropsStatic'
 import Condition from './elementsMisc/Condition'
 import Document from './elementsMisc/Document'
-import { typeOptionsType } from './ElementPropsStatic'
-import { ElementContext } from 'pages/Home/OfficeElement/ElementProps'
 
 export default function ElementCompHOC(
   Element: React.ComponentType,
   type: typeOptionsType['type']
 ) {
   return () => {
-    const elementStruct = useContext(ElementContext)
+    const elementStruct = useContext(ElementStructContext)
 
     const changeValue = () => {
       elementStruct.setData((prev) => ({

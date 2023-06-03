@@ -1,9 +1,9 @@
-import './OfficeElement.styles.scss'
-import { v4 as uuidv4 } from 'uuid'
-import { useEffect, useState } from 'react'
-import ElementProps from 'pages/Home/OfficeElement/ElementProps'
-import { getElementParent } from 'utils/utils'
 import Button from 'components/Button'
+import ElementProps from 'pages/Home/OfficeElement/ElementProps'
+import { useEffect, useState } from 'react'
+import { getElementParent } from 'utils/utils'
+import { v4 as uuid } from 'uuid'
+import './OfficeElement.styles.scss'
 
 const OfficeElement = () => {
   const [propsIsActive, setPropsIsActive] = useState(false)
@@ -30,7 +30,7 @@ const OfficeElement = () => {
   const addElement = () => {
     window.Asc.plugin.executeMethod('AddContentControl', [
       1,
-      { Id: uuidv4(), Tag: '{tag}', Lock: 3, PlaceHolderText: 'название...' },
+      { Id: uuid(), Tag: '{tag}', Lock: 3, PlaceHolderText: 'название...' },
     ])
   }
   return (

@@ -1,6 +1,6 @@
 import Select from 'components/Select'
+import { ElementStructContext } from 'pages/Home/OfficeElement/ElementProps'
 import { useContext, useMemo } from 'react'
-import { ElementContext } from 'pages/Home/OfficeElement/ElementProps'
 
 //TODO change cases from 0..5 to 1..6
 
@@ -19,7 +19,7 @@ const wordCases = [
 ]
 
 const InputField = () => {
-  const elementStruct = useContext(ElementContext)
+  const elementStruct = useContext(ElementStructContext)
   const currentValue = useMemo(
     () => wordCases.find((option) => option.id === elementStruct.data.case),
     [elementStruct.data.case]

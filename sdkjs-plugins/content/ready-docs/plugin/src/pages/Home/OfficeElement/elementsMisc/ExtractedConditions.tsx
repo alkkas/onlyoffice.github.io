@@ -1,18 +1,19 @@
-import Select from 'components/Select'
-import { selectFlagsProps } from 'pages/Home/OfficeElement/ElementPropsStatic'
-import DeleteButton from 'components/DeleteButton/DeleteButton'
 import Button from 'components/Button'
-import { DocumentConditions, ElementStructCondition } from 'types/types'
-import { useContext, useLayoutEffect, useRef, useState, useEffect } from 'react'
-import { FlagsContext } from 'pages/Home/OfficeElement/ElementProps'
+import DeleteButton from 'components/DeleteButton/DeleteButton'
+import Select from 'components/Select'
 import { TemplateContext } from 'pages/Home/Home'
+import {
+  ElementsContext,
+  ElementStructContext,
+} from 'pages/Home/OfficeElement/ElementProps'
+import { selectFlagsProps } from 'pages/Home/OfficeElement/ElementPropsStatic'
+import { useContext, useLayoutEffect } from 'react'
+import { DocumentConditions, ElementStructCondition } from 'types/types'
 import { v4 as uuid } from 'uuid'
-import gsap from 'gsap'
-import Flip from 'gsap/Flip'
 const operators = [
-  { id: 1, label: '=' },
-  { id: 2, label: '>' },
-  { id: 3, label: '<' },
+  { id: 0, label: '=' },
+  { id: 1, label: '>' },
+  { id: 2, label: '<' },
 ]
 
 const labels = {
@@ -20,32 +21,36 @@ const labels = {
   condition: 'условие',
 }
 
-type extractedConditionsProps = {
-  type: 'document' | 'condition'
-}
+const conditionsNames = {
+  document: 'docs',
+  condition: 'displayConditions',
+} as const
 
-type extraProps = {
-  id: string
-  status: 'entered' | 'exiting'
-}
+type typeValues = 'document' | 'condition'
 
-type ConditionArrayUnion<T> = T extends T ? (T & extraProps)[] : never
-type Conditions = ConditionArrayUnion<
-  DocumentConditions | ElementStructCondition
->
-gsap.registerPlugin(Flip)
+type Conditions<T> = T extends 'document'
+  ? DocumentConditions[]
+  : T extends 'condition'
+  ? ElementStructCondition[]
+  : never
 
-const ExtractedConditions = ({ type }: extractedConditionsProps) => {
-  const flags = useContext(FlagsContext)
+const ExtractedConditions = ({ type }: { type: typeValues }) => {
+  type ConditionsType = Conditions<typeValues>
+  const conditionName = conditionsNames[type]
+
+  const elements = useContext(ElementsContext)
   const documents = useContext(TemplateContext)
-  const wrapper = useRef()
-  const q = gsap.utils.selector(wrapper)
-  const [ctx] = useState(() => gsap.context(() => {}))
-  const [elementsState, setElementsState] = useState<Flip.FlipState>()
-  const [conditions, setConditions] = useState<Conditions>([])
+  const elementStruct = useContext(ElementStructContext)
+
+  const setConditions = (func: (prev: ConditionsType) => ConditionsType) => {
+    const newConditions = func(elementStruct.data[conditionName])
+    elementStruct.setData((prev) => ({
+      ...prev,
+      [conditionName]: newConditions,
+    }))
+  }
 
   const addCondition = () => {
-    setElementsState(Flip.getState(q('.condition__block, .add-button')))
     setConditions((prev) => [
       ...prev,
       {
@@ -53,98 +58,99 @@ const ExtractedConditions = ({ type }: extractedConditionsProps) => {
         operatorType: 0,
         value: '',
         id: uuid(),
-        status: 'entered',
       },
     ])
   }
 
   const deleteCondition = (id: string) => {
     setConditions((prev) => {
-      const newConditions: Conditions = []
+      const newConditions: ConditionsType = []
       prev.forEach((condition) => {
-        if (condition.id === id) {
-          condition.status = 'exiting'
+        if (condition.id !== id) {
+          newConditions.push(condition)
         }
-        newConditions.push(condition)
       })
       return newConditions
-    })
-    setElementsState(Flip.getState(q('.condition__block, .add-button')))
-  }
-
-  const removeItems = (items: Conditions) => {
-    if (!items?.length) return
-    setElementsState(Flip.getState(q('.condition__block, .add-button')))
-    setConditions((prev) => {
-      return prev.filter((condition) => condition.status !== 'exiting')
     })
   }
 
   useLayoutEffect(() => {
-    if (!elementsState) return
-    const exiting = conditions.filter((item) => item.status === 'exiting')
-    ctx.add(() => {
-      const timeline = Flip.from(elementsState, {
-        // absolute: true,
-        ease: 'power1.inOut',
-        targets: q('.condition__block, .add-button'),
-        scale: true,
-        simple: true,
-        onEnter: (elements: any) => {
-          return gsap.fromTo(
-            elements,
-            {
-              opacity: 0,
-            },
-            {
-              opacity: 1,
-              delay: 0.2,
-              duration: 0.2,
-            }
-          )
-        },
-        onLeave: (elements: any) => {
-          return gsap.fromTo(
-            elements,
-            { opacity: 1, scale: 1 },
-            {
-              opacity: 0,
-              scale: 0,
-            }
-          )
-        },
-      })
-
-      timeline.add(() => removeItems(exiting))
-    })
-  }, [ctx, elementsState, q])
-  useEffect(() => {
-    return () => ctx.revert()
+    //api has no ids for conditions, so it's hard to understand which items changed
+    //Hence I need to add my own ids
+    elementStruct.setData((prev) => ({
+      ...prev,
+      [conditionName]: prev[conditionName].map((condition) => ({
+        ...condition,
+        id: uuid(),
+      })),
+    }))
   }, [])
 
+  function changeElementStructValue(
+    option: any,
+    id: string,
+    operator: string,
+    key: string
+  ) {
+    elementStruct.setData((prev) => {
+      const conditions = prev[conditionName].map((condition) =>
+        condition.id === id
+          ? { ...condition, [operator]: option[key] }
+          : condition
+      )
+      return { ...prev, [conditionName]: conditions }
+    })
+  }
+
   return (
-    <div style={{ marginTop: 10 }} ref={wrapper}>
-      {conditions.map((condition) => (
+    <div style={{ marginTop: 10 }}>
+      {elementStruct.data[conditionName].map((condition) => (
         <div
           className={`condition__block ${
             type === 'document' ? 'condition__block--blue-border' : ''
-          } ${
-            condition.status === 'exiting' ? 'condition__block--exiting' : ''
           }`}
           key={condition.id}
         >
           {type === 'condition' ? (
-            <Select {...selectFlagsProps} options={flags} />
+            <Select
+              {...selectFlagsProps}
+              options={elements}
+              value={elements.find(
+                (element) => condition.elementName === element.Title
+              )}
+              onChange={(option) =>
+                changeElementStructValue(
+                  option,
+                  condition.id,
+                  'elementName',
+                  'Title'
+                )
+              }
+            />
           ) : (
-            <h4 className="condition__title">Если значение елемента</h4>
+            <h4 className="condition__title">Если значение элемента</h4>
           )}
           <Select
             options={operators}
             getOptionValue={(option) => option.id}
-            defaultValue={operators.find((operator) => operator.id === 1)}
+            value={operators.find(
+              (operator) => condition.operatorType === operator.id
+            )}
+            onChange={(option) =>
+              changeElementStructValue(
+                option,
+                condition.id,
+                'operatorType',
+                'id'
+              )
+            }
             isSearchable={false}
           />
-          <input className="form-control input" placeholder="значение" />
+          <input
+            className="form-control input"
+            placeholder="значение"
+            value={condition.value}
+          />
           {type === 'document' && (
             <>
               <h4 className="condition__title">То отобразить документ:</h4>
@@ -152,6 +158,9 @@ const ExtractedConditions = ({ type }: extractedConditionsProps) => {
                 options={documents}
                 getOptionLabel={(option) => option.Filename}
                 getOptionValue={(option) => option.Id}
+                value={documents.find(
+                  (document) => document.Filename === condition.docName
+                )}
                 placeholder={'Выберете документ...'}
               />
             </>

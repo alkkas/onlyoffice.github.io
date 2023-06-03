@@ -10,17 +10,17 @@ type diffOperator = 0 | 1 | 2
 
 //TODO this two type must contain unique id
 
-export type ElementStructCondition = {
+interface ConditionCommon {
+  id: string
   elementName: string
   operatorType: diffOperator
   value: string
 }
 
-export type DocumentConditions = {
+export interface ElementStructCondition extends ConditionCommon {}
+
+export interface DocumentConditions extends ConditionCommon {
   docName: string
-  elementName: string
-  operatorType: diffOperator
-  value: string
 }
 
 interface Entity {

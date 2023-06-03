@@ -1,7 +1,6 @@
 .office-element {
   &__title {
     margin: 20px 0 10px;
-
   }
   &__btn {
     margin: 20px 0 30px;
@@ -10,7 +9,10 @@
     display: block;
     min-width: 0;
     border: 0;
-    padding: 0;
+    border-radius: 7px;
+    box-shadow: rgba(0, 0, 0, 0.08) 0px 4px 16px, rgba(0, 0, 0, 0) 0px 8px 24px,
+      rgba(0, 0, 0, 0.08) 0px 16px 56px;
+    padding: 10px;
     &:disabled {
       opacity: 0.6;
     }
@@ -27,7 +29,7 @@
   &__insert-checkbox {
     display: flex;
     gap: 5px;
-    margin: 10px 0 ;
+    margin: 10px 0;
   }
   &__input {
     padding: 10px;
@@ -51,7 +53,3 @@
     }
   }
 }
-
-
-
-

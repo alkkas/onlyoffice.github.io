@@ -1,32 +1,40 @@
 {
-  "name": "ready documents",
-  "guid": "asc.{8DEB43B6-32E2-4C47-9EE3-0688D49ABDE0}",
-  "nameLocale": {
-    "ru": "Готовые Документы"
-  },
+	"name": "ready documents",
+	"guid": "asc.{8DEB43B6-32E2-4C47-9EE3-0688D49ABDE0}",
+	"nameLocale": {
+		"ru": "Готовые Документы"
+	},
 
-  "variations": [
-    {
-      "description": "automate documents edit and creation process",
-      "descriptionLocale": {
-        "ru": "автоматизация редактирования и создания документов"
-      },
-      "url": "index.html",
+	"variations": [
+		{
+			"description": "automate documents edit and creation process",
+			"descriptionLocale": {
+				"ru": "автоматизация редактирования и создания документов"
+			},
+			"url": "index.html",
 
-      "icons": ["static/documents.png"],
-      "isViewer": false,
-      "EditorsSupport": ["word"],
+			"icons": ["static/documents.png"],
+			"EditorsSupport": ["word"],
 
-      "isVisual": true,
-      "isModal": false,
-      "isInsideMode": true,
+			"isVisual": true,
+			"isModal": false,
+			"isInsideMode": true,
+			"isDisplayedInViewer": true,
 
-      "initDataType": "none",
-      "initData": "",
+			"initDataType": "text",
+			"initData": "",
 
-      "isUpdateOleOnResize": false,
-      "events": ["onClick", "onFocusContentControl", "onBlurContentControl"],
-      "buttons": []
-    }
-  ]
+			"size": [340, 2000000],
+
+			"isUpdateOleOnResize": false,
+			"events": [
+				"onClick",
+				"onScroll",
+				"onFocusContentControl",
+				"onChangeContentControl",
+				"onBlurContentControl"
+			],
+			"buttons": []
+		}
+	]
 }

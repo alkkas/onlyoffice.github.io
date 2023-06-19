@@ -1,4 +1,4 @@
-import { ElementStructContext } from 'pages/Home/OfficeElement/ElementProps'
+import { ElementStructContext } from 'pages/Home/OfficeElement/OfficeElement'
 import React, { useContext } from 'react'
 import { typeOptionsType } from './ElementPropsStatic'
 import Condition from './elementsMisc/Condition'
@@ -37,7 +37,7 @@ export default function ElementCompHOC(
         <Element />
 
         <Condition />
-        {type !== 5 && <Document />}
+        {type !== 5 && type !== 8 && <Document />}
       </>
     )
   }

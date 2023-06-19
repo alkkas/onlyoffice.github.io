@@ -11,7 +11,7 @@ export const client = axios.create({
   baseURL: 'https://gotdoc.nord.su/api/',
   timeout: 7000,
   headers: {
-    Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+    authorization: `${localStorage.getItem('access_token')}`,
   },
 })
 
@@ -63,4 +63,15 @@ export const getTemplate = async (categoryId: string) => {
 
 export const getElements = async (TemplateId: string) => {
   return apiHelper('post', 'Template', 'getVariables', { TemplateId })
+}
+
+type saveElementType = {
+  categoryId: string
+  struct: string
+  title: string
+}
+
+export const saveElement = async (data: saveElementType) => {
+  console.log(data)
+  return apiHelper('post', 'Template', 'changeVariable', data)
 }

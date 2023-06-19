@@ -1,7 +1,7 @@
 import Button from 'components/Button'
 import DeleteButton from 'components/DeleteButton/DeleteButton'
 import { useContext, useState } from 'react'
-import { ElementStructContext } from '../../ElementProps'
+import { ElementStructContext } from '../../OfficeElement'
 import './RadioAndCheckbox.styles.scss'
 
 const RadioInput = () => {

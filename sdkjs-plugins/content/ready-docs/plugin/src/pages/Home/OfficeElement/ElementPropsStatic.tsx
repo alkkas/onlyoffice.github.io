@@ -1,7 +1,6 @@
 import InputField from 'pages/Home/OfficeElement/elementComponents/InputField'
 import RadioAndCheckbox from 'pages/Home/OfficeElement/elementComponents/RadioAndCheckbox/RadioAndChecxbox'
 import UnfixedList from 'pages/Home/OfficeElement/elementComponents/UnfixedList'
-import { v4 as uuid } from 'uuid'
 
 //TODO new api should be not number but strings
 //input text radio checkbox complexList
@@ -10,8 +9,9 @@ import { v4 as uuid } from 'uuid'
 // 6 = radio
 // 7 = checkbox
 // 8 = complexList
+// 9 = complexListNums
 export type typeOptionsType = {
-  type: 4 | 5 | 6 | 7 | 8
+  type: 4 | 5 | 6 | 7 | 8 | 9
   label: string
   Component: () => JSX.Element
 }
@@ -27,6 +27,12 @@ export const typeOptions: typeOptionsType[] = [
     Component: UnfixedList,
   },
 ]
+
+export const complexListItemOptions: typeOptionsType[] = [
+  { type: 4, label: 'Поле для ввода', Component: InputField },
+  { type: 9, label: 'Нумерация', Component: () => <></> },
+]
+
 export const colors = {
   4: 'light-orange',
   5: 'light-green',
@@ -42,11 +48,6 @@ export const selectElementsProps = {
   getOptionLabel: (option: any) => option.Title,
   getOptionValue: (option: any) => option.Id,
   formatCreateLabel: (input: string) => `создать ${input}`,
-  getNewOptionData: (inputValue: string, optionLabel: string) => ({
-    Title: optionLabel,
-    Id: uuid(),
-    Struct: {},
-  }),
 
   styles: {
     option: (base: any, state: any) => ({

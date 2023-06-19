@@ -16,6 +16,7 @@
       rel="stylesheet"
       href="https://onlyoffice.github.io/sdkjs-plugins/v1/plugins.css"
     />
+    <!-- initializing plugin -->
     <script>
       ;(function (window, undefined) {
         window.Asc.plugin.init = function () {}
@@ -23,6 +24,15 @@
           this.executeCommand('close', '')
         }
       })(window, undefined)
+    </script>
+    <!-- remove attribute that disables plugin scroll -->
+    <script defer>
+      const iframe = window.parent.document.getElementById(
+        'iframe_asc.{8DEB43B6-32E2-4C47-9EE3-0688D49ABDE0}'
+      )
+      if (iframe) {
+        iframe.removeAttribute('scrolling')
+      }
     </script>
     <title>Плагин</title>
   </head>

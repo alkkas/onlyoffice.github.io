@@ -1,5 +1,5 @@
 import Checkbox from 'components/Checkbox/Checkbox'
-import { ElementStructContext } from 'pages/Home/OfficeElement/ElementProps'
+import { ElementStructContext } from 'pages/Home/OfficeElement/OfficeElement'
 import { useContext } from 'react'
 import { v4 as uuid } from 'uuid'
 import ExtractedConditions from './ExtractedConditions/ExtractedConditions'

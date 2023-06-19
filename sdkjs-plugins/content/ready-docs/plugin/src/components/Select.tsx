@@ -1,6 +1,5 @@
 import Select, { GroupBase } from 'react-select'
 import { StateManagerProps } from 'react-select/dist/declarations/src/useStateManager'
-import { RefAttributes } from 'react'
 
 export default (props: StateManagerProps<any, false, GroupBase<any>>) => {
   return (
@@ -10,6 +9,7 @@ export default (props: StateManagerProps<any, false, GroupBase<any>>) => {
       }}
       loadingMessage={() => 'Загрузка...'}
       noOptionsMessage={() => 'Пусто :('}
+      placeholder="Выберите..."
       {...props}
     />
   )

@@ -11,24 +11,24 @@ export const debounce = (func: (...args: any) => void, time: number) => {
   }
 }
 
-export const getElementParent = () => {
-  window.Asc.plugin.callCommand(function () {
-    const control = Asc.scope.control
-    const oDocument = Api.GetDocument()
-    const controls = oDocument.GetAllContentControls()
-    for (const documentControl of controls) {
-      const documentControlObj = JSON.parse(documentControl.ToJSON())
-      if (documentControlObj.sdtPr.id === control.Id) {
-        const parent = documentControl.GetParentContentControl()
-        if (parent) {
-          Asc.scope.parent = JSON.parse(parent.ToJSON())
-          console.log(Asc.scope.parent)
-          break
-        }
-      }
-    }
-  }, false)
-}
+// export const getElementParent = () => {
+//   Asc.plugin.callCommand(function () {
+//     const obj = Asc.scope.obj
+//     const control = obj.control
+//     const oDocument = Api.GetDocument()
+//     const controls = oDocument.GetAllContentControls()
+//     for (const documentControl of controls) {
+//       const documentControlObj = JSON.parse(documentControl.ToJSON())
+//       if (documentControlObj.sdtPr.id === control.Id) {
+//         const parent = documentControl.GetParentContentControl()
+//         if (parent) {
+//           Asc.scope.obj.parentId = parent.vf.eb
+//           return
+//         }
+//       }
+//     }
+//   }, false)
+// }
 
 export const apiHelper = async (
   method: 'get' | 'post' | 'put' | 'delete',
@@ -36,8 +36,9 @@ export const apiHelper = async (
   action: string,
   params: { [key: string]: string }
 ): Promise<any> => {
-  const result = await client[method](`?class=${className}&action=${action}`, {
-    ...params,
-  })
+  const result = await client[method](
+    `?class=${className}&action=${action}`,
+    params
+  )
   return result.data
 }

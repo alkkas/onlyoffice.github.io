@@ -1,4 +1,4 @@
-import { ElementStructContext } from 'pages/Home/OfficeElement/ElementProps'
+import { ElementStructContext } from 'pages/Home/OfficeElement/OfficeElement'
 import { useContext } from 'react'
 
 const useChangeElementStruct = () => {

@@ -1,5 +1,5 @@
 import Select from 'components/Select'
-import { ElementStructContext } from 'pages/Home/OfficeElement/ElementProps'
+import { ElementStructContext } from 'pages/Home/OfficeElement/OfficeElement'
 import { useContext, useMemo } from 'react'
 
 //TODO change cases from 0..5 to 1..6

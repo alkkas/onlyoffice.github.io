@@ -3,7 +3,7 @@ import useChangeElementStruct from 'hooks/useChangeElementStruct'
 import { selectElementsProps } from 'pages/Home/OfficeElement/ElementPropsStatic'
 import { useContext } from 'react'
 import { Element, ElementStructCondition } from 'types/types'
-import { ElementsContext } from '../../ElementProps'
+import { ElementsContext } from '../../OfficeElement'
 
 type ElementListProps = { condition: ElementStructCondition }
 

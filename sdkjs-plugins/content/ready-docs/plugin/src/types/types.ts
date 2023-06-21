@@ -34,13 +34,13 @@ export interface ElementStruct {
   isHidden: boolean
   parentName: string
   struct: string[]
-  typeId: 4 | 5 | 6 | 7 | 8
+  typeId: 4 | 5 | 6 | 7 | 8 | 9
 }
 
 export interface Element extends Entity {
   Struct: ElementStruct
   TemplateId: string
-  Type: '4' | '5' | '6' | '7' | '8'
+  Type: '4' | '5' | '6' | '7' | '8' | '9'
   isChanged: '1' | null
 }
 

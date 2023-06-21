@@ -11,6 +11,23 @@ export const debounce = (func: (...args: any) => void, time: number) => {
   }
 }
 
+type pipeComponentsType = {
+  Component: React.Context<any>
+  value: any
+}
+
+export const pipeComponents =
+  (...components: pipeComponentsType[]) =>
+  (ChildComponent: JSX.Element) =>
+    components.reduce(
+      (Child, Item) => (
+        <Item.Component.Provider value={Item.value}>
+          {Child}
+        </Item.Component.Provider>
+      ),
+      ChildComponent
+    )
+
 // export const getElementParent = () => {
 //   Asc.plugin.callCommand(function () {
 //     const obj = Asc.scope.obj

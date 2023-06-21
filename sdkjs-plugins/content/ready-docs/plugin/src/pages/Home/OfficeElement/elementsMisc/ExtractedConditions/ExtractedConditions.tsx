@@ -25,7 +25,6 @@ function ExtractedConditions({ type }: { type: conditionsType }) {
   type ConditionsType = DocumentCondition[] | ElementStructCondition[]
   const conditionName = conditionsNames[type]
   const elementStruct = useContext(ElementStructContext)
-  console.log(elementStruct)
 
   const setConditions = (func: (prev: ConditionsType) => ConditionsType) => {
     const newConditions = func(elementStruct.data[conditionName])

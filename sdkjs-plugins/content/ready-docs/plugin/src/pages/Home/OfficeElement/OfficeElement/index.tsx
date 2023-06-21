@@ -1,6 +1,5 @@
 import { getElements, saveElement } from 'api/api'
 import Button from 'components/Button'
-import Select from 'components/Select'
 import { isEqual } from 'lodash'
 import { TemplateContext } from 'pages/Home/Home'
 import {
@@ -13,18 +12,17 @@ import {
   useState,
 } from 'react'
 import { useMutation } from 'react-query'
-import CreatableSelect from 'react-select/creatable'
 import { toast } from 'react-toastify'
 import { Element, ElementStruct } from 'types/types'
+import { pipeComponents } from 'utils/utils'
 import { v4 as uuid } from 'uuid'
-import ElementCompHOC from './ElementCompHOC'
-import {
-  complexListItemOptions,
-  selectElementsProps,
-  typeOptions,
-} from './ElementPropsStatic'
+import ElementCompHOC from '../ElementCompHOC'
+import { complexListItemOptions, typeOptions } from '../ElementPropsStatic'
+import ChooseElement from './ChooseElement'
+import { ChooseType } from './ChooseType'
+import { useIsCCPartOfComplexList } from './OfficeElementHooks'
 
-import './OfficeElement.styles.scss'
+import '../OfficeElement.styles.scss'
 
 // TODO MAYBE IN FUTURE CREATE TEXTAREA FIELD FOR CHOOSING AND ADDING NEW FLAGS
 // TODO element.Struct.case exist for every element should be existing only for input elements
@@ -38,7 +36,7 @@ import './OfficeElement.styles.scss'
 //   )
 // }
 
-const defaultElementStruct: ElementStruct = {
+export const defaultElementStruct: ElementStruct = {
   typeId: 4,
   case: 0,
   struct: [],
@@ -48,26 +46,29 @@ const defaultElementStruct: ElementStruct = {
   parentName: null,
 }
 
-const defaultElement: Partial<Element> = {
+export const defaultElement: Partial<Element> = {
   Struct: defaultElementStruct,
   Type: '4',
   Title: '',
   isChanged: null,
 }
 
-type ElementStructContext = {
-  data: ElementStruct
-  setData: (
-    data: ElementStruct | ((data: ElementStruct) => ElementStruct)
-  ) => void
+type ElementContextType<T> = {
+  data: T
+  setData: (data: T | ((data: T) => T)) => void
 }
 
-export const ElementStructContext = createContext<ElementStructContext>({
+export const ElementStructContext = createContext<
+  ElementContextType<ElementStruct>
+>({
   data: defaultElementStruct,
   setData: () => undefined,
 })
 
+export const ControlContext = createContext(null)
 export const ElementsContext = createContext<Element[]>([])
+export const CurrentElementContext =
+  createContext<ElementContextType<Partial<Element>>>(null)
 
 export default ({ categoryId }: { categoryId: string }) => {
   const templates = useContext(TemplateContext)
@@ -76,10 +77,11 @@ export default ({ categoryId }: { categoryId: string }) => {
     [templates]
   )
   const [noOptionsMsg, setNoOptionsMsg] = useState('Пусто :(')
-
-  const [elementsData, setElementsData] = useState<Element[]>([])
+  const localElements = JSON.parse(localStorage.getItem('elements'))
+  const [elementsData, setElementsData] = useState<Element[]>(
+    localElements || []
+  )
   const [currentElement, setCurrentElement] = useState(defaultElement)
-  console.log(currentElement)
   const defaultElementData = useRef(defaultElement)
   const elementStruct = useMemo(
     () => currentElement.Struct,
@@ -89,11 +91,18 @@ export default ({ categoryId }: { categoryId: string }) => {
   const [propsIsActive, setPropsIsActive] = useState(false)
 
   const addElement = () => {
-    const tag: any = { elementTitle: null, parentId: null }
+    // TODO multiple elements has same ids so i need to use title
+    // TODO in cc tag stored full struct of element, it's vulnerable to bugs
+    const tag: any = {
+      elementTitle: null,
+      parentId: null,
+      ...defaultElementStruct,
+    }
+    setCurrentElement(defaultElement)
     if (currentControl) {
       tag.parentId = currentControl.InternalId
     }
-    window.Asc.plugin.executeMethod('AddContentControl', [
+    Asc.plugin.executeMethod('AddContentControl', [
       1,
       {
         Id: uuid(),
@@ -130,50 +139,28 @@ export default ({ categoryId }: { categoryId: string }) => {
 
   const [currentControl, setCurrentControl] = useState(null)
 
-  const [isCCPartOfComplexList, setCCPartOfComplexList] = useState(false)
-  useMemo(() => {
-    const tag = JSON.parse(currentControl?.Tag || '{}')
-    let isParentComplexList = false
-    if (Asc?.plugin?.executeMethod) {
-      Asc.plugin.executeMethod(
-        'GetAllContentControls',
-        null,
-        function (data: any) {
-          data.forEach((item: any) => {
-            if (item.InternalId === tag?.parentId) {
-              const itemTag = JSON.parse(item.Tag)
-              const isItemComplexList =
-                elementsData.find(
-                  (element) => element?.Title === itemTag.elementTitle
-                )?.Type === '8'
-              if (isItemComplexList) {
-                isParentComplexList = true
-              }
-            }
-          })
-          setCCPartOfComplexList(isParentComplexList)
-        }
-      )
-    }
-  }, [currentControl])
+  const isCCPartOfComplexList = useIsCCPartOfComplexList(
+    currentControl,
+    elementsData
+  )
 
-  const elementStructType = useMemo(
+  const elementStructTypeOption = useMemo(
     () =>
       (isCCPartOfComplexList ? complexListItemOptions : typeOptions).find(
         (option) => option.type === elementStruct?.typeId
       ),
-    [elementStruct?.typeId]
+    [elementStruct?.typeId, isCCPartOfComplexList]
   )
 
   const ElementComp = useMemo(() => {
     const typeOption = typeOptions.find(
-      (option) => option.type === elementStructType?.type
+      (option) => option.type === elementStructTypeOption?.type
     )
     if (typeOption) {
       return ElementCompHOC(typeOption.Component, typeOption.type)
     }
     return () => <></>
-  }, [elementStructType])
+  }, [elementStructTypeOption])
 
   useMemo(() => {
     const elementTitle = JSON.parse(currentControl?.Tag || '{}')?.elementTitle
@@ -183,16 +170,19 @@ export default ({ categoryId }: { categoryId: string }) => {
     if (element) {
       setCurrentElement(element)
       defaultElementData.current = element
+    } else {
+      setCurrentElement(defaultElement)
+      defaultElementData.current = defaultElement
     }
   }, [currentControl?.Tag])
 
   useEffect(() => {
-    Asc.plugin.event_onFocusContentControl = function (control: any) {
-      console.log(control)
+    Asc.plugin.event_onFocusContentControl = (control: any) => {
       setPropsIsActive(true)
       setCurrentControl(control)
+      console.log(control)
     }
-    Asc.plugin.event_onBlurContentControl = (control: any) => {
+    Asc.plugin.event_onBlurContentControl = (_: any) => {
       setPropsIsActive(false)
       setCurrentControl(null)
     }
@@ -204,46 +194,74 @@ export default ({ categoryId }: { categoryId: string }) => {
         // TODO I have to send request on every item in array should be one request
         elements.mutate(id)
       }
-    } else {
-      setElementsData([])
     }
-  }, [templateIds, elements.mutate])
+  }, [templateIds])
 
   useEffect(() => {
     fetchElements()
   }, [fetchElements])
 
-  const changeElement = (option: Element) => {
-    defaultElementData.current = option
-    Asc.plugin.executeMethod(
+  const saveElements = () => {
+    const prevElements = JSON.parse(localStorage.getItem('elements')) || []
+    if (
+      !elementsData.find((element) => element.Title === currentElement.Title)
+    ) {
+      localStorage.setItem(
+        'elements',
+        JSON.stringify([...prevElements, currentElement])
+      )
+      setElementsData((prev) => [...prev, currentElement as Element])
+    } else {
+      setElementsData((prev) => {
+        let index: number | null = null
+        prev.forEach((element, i) => {
+          if (element.Title === currentElement.Title) {
+            index = i
+          }
+        })
+        return [
+          ...prev.slice(0, index),
+          currentElement as Element,
+          ...prev.slice(index + 1),
+        ]
+      })
+    }
+  }
+
+  const changeCurrentElementTag = () => {
+    window.Asc.plugin.executeMethod(
       'GetCurrentContentControlPr',
       [],
       function (obj: any) {
         const tag = JSON.parse(obj.Tag)
-        tag.elementTitle = option.Title
         Asc.plugin.executeMethod('InsertAndReplaceContentControls', [
           [
             {
               Props: {
                 Id: uuid(),
                 Lock: 3,
-                Tag: JSON.stringify(tag),
+                Tag: JSON.stringify({
+                  ...tag,
+                  ...currentElement.Struct,
+                  ...(currentElement.Struct.typeId === 9 && {
+                    elementTitle: 'номер',
+                  }),
+                }),
                 InternalId: obj.InternalId,
-                Alias: option.Title,
+                Alias: currentElement.Title,
               },
             },
           ],
         ])
       }
     )
-    setCurrentElement(option)
   }
 
   const elementChanges = useMutation(saveElement, {
     onSuccess: (_) => {
       toast.success('Сохранено успешно!')
-      setElementsData([])
-      fetchElements()
+      changeCurrentElementTag()
+      saveElements()
       defaultElementData.current = currentElement
     },
     onError: (_) => {
@@ -252,23 +270,31 @@ export default ({ categoryId }: { categoryId: string }) => {
   })
 
   const saveChanges = () => {
-    elementChanges.mutate({
-      categoryId,
-      struct: JSON.stringify(currentElement.Struct),
-      title: currentElement.Title,
-    })
+    if (currentElement.Type === '9') {
+      toast.success('Сохранено успешно!')
+      changeCurrentElementTag()
+      saveElements()
+    } else {
+      elementChanges.mutate({
+        categoryId,
+        struct: JSON.stringify(currentElement.Struct),
+        title: currentElement.Title,
+      })
+    }
   }
 
   const setElementStruct = (
     struct: ElementStruct | ((prev: ElementStruct) => ElementStruct)
   ) => {
-    console.log(currentElement)
     if (typeof struct === 'function') {
       setCurrentElement((prev) => ({ ...prev, Struct: struct(prev.Struct) }))
     } else {
       setCurrentElement((prev) => ({ ...prev, Struct: struct }))
     }
   }
+
+  const fieldDisabled =
+    !templateIds?.length || elementChanges.isLoading || !elementsData?.length
 
   return (
     <>
@@ -279,55 +305,40 @@ export default ({ categoryId }: { categoryId: string }) => {
         </p>
       )}
       {propsIsActive && (
-        <fieldset
-          className="office-element__fieldset"
-          disabled={
-            !templateIds?.length ||
-            elementChanges.isLoading ||
-            !elementsData?.length
-          }
-        >
-          <CreatableSelect
-            noOptionsMessage={() => noOptionsMsg}
-            options={
-              !isCCPartOfComplexList
-                ? elementsData
-                : elementsData.filter((item) => item?.Type === '4')
+        <fieldset className="office-element__fieldset" disabled={fieldDisabled}>
+          {pipeComponents(
+            { Component: ElementsContext, value: elementsData },
+            {
+              Component: CurrentElementContext,
+              value: { data: currentElement, setData: setCurrentElement },
             }
-            className="element-props__select"
-            onChange={(option) => changeElement(option)}
-            value={elementsData.find(
-              (element) => element.Id === currentElement?.Id
-            )}
-            getNewOptionData={(_: string, optionLabel: string) => ({
-              Title: optionLabel,
-              Id: uuid(),
-              Struct: defaultElementStruct,
-              Type: elementStructType?.type,
-              isChanged: null,
-            })}
-            {...selectElementsProps}
-          />
+          )(
+            <ChooseElement
+              noOptionsMsg={noOptionsMsg}
+              isCCPartOfComplexList={isCCPartOfComplexList}
+              elementStructTypeOption={elementStructTypeOption}
+            />
+          )}
 
           <p style={{ marginBottom: 5 }}>Тип Элемента:</p>
-          <Select
-            options={
-              isCCPartOfComplexList ? complexListItemOptions : typeOptions
+
+          <CurrentElementContext.Provider
+            value={{ data: currentElement, setData: setCurrentElement }}
+          >
+            <ChooseType
+              isCCPartOfComplexList={isCCPartOfComplexList}
+              elementStructTypeOption={elementStructTypeOption}
+            />
+          </CurrentElementContext.Provider>
+
+          {pipeComponents(
+            { Component: ControlContext, value: currentControl },
+            { Component: ElementsContext, value: elementsData },
+            {
+              Component: ElementStructContext,
+              value: { data: elementStruct, setData: setElementStruct },
             }
-            value={elementStructType}
-            onChange={(option) =>
-              setElementStruct((prev) => ({ ...prev, typeId: option.type }))
-            }
-            getOptionValue={(option) => option.type}
-            isSearchable={false}
-          />
-          <ElementsContext.Provider value={elementsData}>
-            <ElementStructContext.Provider
-              value={{ data: elementStruct, setData: setElementStruct }}
-            >
-              <ElementComp />
-            </ElementStructContext.Provider>
-          </ElementsContext.Provider>
+          )(<ElementComp />)}
 
           <Button
             className="submit"

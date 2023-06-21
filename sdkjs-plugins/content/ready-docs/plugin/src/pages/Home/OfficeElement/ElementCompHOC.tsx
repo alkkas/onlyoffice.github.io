@@ -1,5 +1,8 @@
-import { ElementStructContext } from 'pages/Home/OfficeElement/OfficeElement'
-import React, { useContext } from 'react'
+import {
+  ControlContext,
+  ElementStructContext,
+} from 'pages/Home/OfficeElement/OfficeElement'
+import { useContext, useMemo } from 'react'
 import { typeOptionsType } from './ElementPropsStatic'
 import Condition from './elementsMisc/Condition'
 import Document from './elementsMisc/Document'
@@ -10,7 +13,11 @@ export default function ElementCompHOC(
 ) {
   return () => {
     const elementStruct = useContext(ElementStructContext)
-
+    const currentControl = useContext(ControlContext)
+    const parentId = useMemo(
+      () => JSON.parse(currentControl?.Tag || '{}')?.parentId,
+      [currentControl]
+    )
     const changeValue = () => {
       elementStruct.setData((prev) => ({
         ...prev,
@@ -35,9 +42,12 @@ export default function ElementCompHOC(
           </div>
         )}
         <Element />
-
-        <Condition />
-        {type !== 5 && type !== 8 && <Document />}
+        {!parentId && (
+          <>
+            <Condition />
+            {type !== 5 && type !== 8 && <Document />}
+          </>
+        )}
       </>
     )
   }

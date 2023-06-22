@@ -37,6 +37,11 @@ input[type='checkbox'].form-control:checked::after {
   width: 5px;
   height: 9px;
 }
+
+*:disabled {
+  pointer-events: none;
+}
+
 :root {
   //colors
   --light-red: rgba(255, 99, 71, 0.5);

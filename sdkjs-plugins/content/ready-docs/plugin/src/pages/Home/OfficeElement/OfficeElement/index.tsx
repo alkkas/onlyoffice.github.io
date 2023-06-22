@@ -1,5 +1,6 @@
 import { getElements, saveElement } from 'api/api'
 import Button from 'components/Button'
+import { Form, Formik } from 'formik'
 import { isEqual } from 'lodash'
 import { TemplateContext } from 'pages/Home/Home'
 import {
@@ -21,6 +22,7 @@ import { complexListItemOptions, typeOptions } from '../ElementPropsStatic'
 import ChooseElement from './ChooseElement'
 import { ChooseType } from './ChooseType'
 import { useIsCCPartOfComplexList } from './OfficeElementHooks'
+import officeSchema from './OfficeElementSchema'
 
 import '../OfficeElement.styles.scss'
 
@@ -35,6 +37,10 @@ import '../OfficeElement.styles.scss'
 //     </>
 //   )
 // }
+
+const initialValues = {
+  chooseElement: '',
+}
 
 export const defaultElementStruct: ElementStruct = {
   typeId: 4,
@@ -189,6 +195,7 @@ export default ({ categoryId }: { categoryId: string }) => {
   }, [])
 
   const fetchElements = useCallback(() => {
+    setElementsData([])
     if (templateIds?.length) {
       for (const id of templateIds) {
         // TODO I have to send request on every item in array should be one request
@@ -304,56 +311,68 @@ export default ({ categoryId }: { categoryId: string }) => {
           Выберите категорию для редактирования элемента!
         </p>
       )}
-      {propsIsActive && (
-        <fieldset className="office-element__fieldset" disabled={fieldDisabled}>
-          {pipeComponents(
-            { Component: ElementsContext, value: elementsData },
-            {
-              Component: CurrentElementContext,
-              value: { data: currentElement, setData: setCurrentElement },
-            }
-          )(
-            <ChooseElement
-              noOptionsMsg={noOptionsMsg}
-              isCCPartOfComplexList={isCCPartOfComplexList}
-              elementStructTypeOption={elementStructTypeOption}
-            />
+      <Formik
+        initialValues={initialValues}
+        onSubmit={saveChanges}
+        validationSchema={officeSchema}
+      >
+        <Form>
+          {true && (
+            <fieldset
+              className="office-element__fieldset"
+              disabled={fieldDisabled}
+            >
+              {pipeComponents(
+                { Component: ElementsContext, value: elementsData },
+                {
+                  Component: CurrentElementContext,
+                  value: { data: currentElement, setData: setCurrentElement },
+                }
+              )(
+                <ChooseElement
+                  noOptionsMsg={noOptionsMsg}
+                  isCCPartOfComplexList={isCCPartOfComplexList}
+                  elementStructTypeOption={elementStructTypeOption}
+                  name="chooseElement"
+                />
+              )}
+
+              <p style={{ marginBottom: 5 }}>Тип Элемента:</p>
+
+              <CurrentElementContext.Provider
+                value={{ data: currentElement, setData: setCurrentElement }}
+              >
+                <ChooseType
+                  isCCPartOfComplexList={isCCPartOfComplexList}
+                  elementStructTypeOption={elementStructTypeOption}
+                />
+              </CurrentElementContext.Provider>
+
+              {pipeComponents(
+                { Component: ControlContext, value: currentControl },
+                { Component: ElementsContext, value: elementsData },
+                {
+                  Component: ElementStructContext,
+                  value: { data: elementStruct, setData: setElementStruct },
+                }
+              )(<ElementComp />)}
+
+              <Button
+                type="submit"
+                className="submit"
+                style={{ marginTop: 20 }}
+                disabled={isEqual(defaultElementData.current, currentElement)}
+              >
+                Сохранить изменения
+              </Button>
+            </fieldset>
           )}
 
-          <p style={{ marginBottom: 5 }}>Тип Элемента:</p>
-
-          <CurrentElementContext.Provider
-            value={{ data: currentElement, setData: setCurrentElement }}
-          >
-            <ChooseType
-              isCCPartOfComplexList={isCCPartOfComplexList}
-              elementStructTypeOption={elementStructTypeOption}
-            />
-          </CurrentElementContext.Provider>
-
-          {pipeComponents(
-            { Component: ControlContext, value: currentControl },
-            { Component: ElementsContext, value: elementsData },
-            {
-              Component: ElementStructContext,
-              value: { data: elementStruct, setData: setElementStruct },
-            }
-          )(<ElementComp />)}
-
-          <Button
-            className="submit"
-            style={{ marginTop: 20 }}
-            onClick={saveChanges}
-            disabled={isEqual(defaultElementData.current, currentElement)}
-          >
-            Сохранить изменения
+          <Button className="office-element__btn submit" onClick={addElement}>
+            Создать элемент
           </Button>
-        </fieldset>
-      )}
-
-      <Button className="office-element__btn submit" onClick={addElement}>
-        Создать элемент
-      </Button>
+        </Form>
+      </Formik>
     </>
   )
 }

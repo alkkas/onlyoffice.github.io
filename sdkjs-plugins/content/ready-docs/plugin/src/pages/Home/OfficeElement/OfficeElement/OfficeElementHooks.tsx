@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Element } from 'types/types'
 import { v4 as uuid } from 'uuid'
+
 export const useIsCCPartOfComplexList = (
   currentControl: any,
   elementsData: Element[]
@@ -30,7 +31,7 @@ export const useIsCCPartOfComplexList = (
                         parentName: itemTag.elementTitle,
                       }),
                       InternalId: currentControl.InternalId,
-                      Alias: tag.elementTitle,
+                      Alias: tag.elementTitle || '',
                     },
                   },
                 ],

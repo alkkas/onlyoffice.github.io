@@ -36,6 +36,7 @@ const InputField = () => {
         value={currentValue}
         onChange={changeCase}
         getOptionValue={(option) => option.id}
+        isSearchable={false}
       />
     </>
   )

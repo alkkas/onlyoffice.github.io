@@ -24,7 +24,9 @@
   font-size: 13px;
   margin: 10px 0;
 }
-
+.select-container {
+  margin-bottom: 10px;
+}
 .element-props {
   &__insert-checkbox {
     display: flex;
@@ -38,8 +40,12 @@
     font-size: var(--m);
     margin: 10px 0;
   }
-  &__select {
-    margin-bottom: 10px;
+  &__error--msg {
+    color: var(--red);
+    font-size: 13px;
+  }
+  &__select--error {
+    border: 1px solid var(--red);
   }
   &__option {
     &:hover {

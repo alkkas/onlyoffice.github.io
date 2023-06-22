@@ -27,6 +27,7 @@ export default function Home() {
       )
     },
   })
+
   const template = useMutation(getTemplate, {
     onError: () => {
       toast.error(
@@ -84,7 +85,7 @@ export default function Home() {
         isLoading={template.isLoading}
         getOptionValue={(option) => option.Id}
       />
-      <Button onClick={logOut} type="submit">
+      <Button onClick={logOut} type="submit" style={{ marginBottom: 15 }}>
         Выйти
       </Button>
     </div>

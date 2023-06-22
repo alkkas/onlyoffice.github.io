@@ -1,13 +1,12 @@
-import { Form, Formik } from 'formik'
+import { userLogIn } from 'api/api'
 import Input from 'components/Input/Input'
+import Load from 'components/Load/Load'
+import { Form, Formik } from 'formik'
+import { useMutation } from 'react-query'
 import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import './Login.scss'
 import schema from './loginSchema'
-import { useMutation } from 'react-query'
-import { userLogIn } from 'api/api'
-import Load from 'components/Load/Load'
-import { useEffect } from 'react'
 
 const initialValues = {
   login: '',
@@ -36,7 +35,7 @@ export default function Login() {
         validationSchema={schema}
       >
         {({ errors, touched }) => (
-          <Form>
+          <Form className="login__form">
             <Input label="введите email" name="login" type="text" />
             <Input label="введите пароль" name="password" type="password" />
             <button

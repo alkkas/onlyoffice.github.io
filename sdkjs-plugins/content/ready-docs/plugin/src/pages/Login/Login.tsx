@@ -36,8 +36,18 @@ export default function Login() {
       >
         {({ errors, touched }) => (
           <Form className="login__form">
-            <Input label="введите email" name="login" type="text" />
-            <Input label="введите пароль" name="password" type="password" />
+            <Input
+              label="введите email"
+              name="login"
+              type="text"
+              containerClass="login-input__container"
+            />
+            <Input
+              label="введите пароль"
+              name="password"
+              type="password"
+              containerClass="login-input__container"
+            />
             <button
               className="btn-text-default submit login__button"
               type="submit"

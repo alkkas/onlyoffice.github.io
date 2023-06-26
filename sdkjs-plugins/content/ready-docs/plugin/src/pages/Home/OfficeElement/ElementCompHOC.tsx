@@ -14,10 +14,23 @@ export default function ElementCompHOC(
   return () => {
     const elementStruct = useContext(ElementStructContext)
     const currentControl = useContext(ControlContext)
-    const parentId = useMemo(
-      () => JSON.parse(currentControl?.Tag || '{}')?.parentId,
-      [currentControl]
-    )
+    const parentType = useMemo(() => {
+      const parentId = JSON.parse(currentControl?.Tag || '{}')?.parentId
+      let parentType = ''
+      Asc.plugin.executeMethod(
+        'GetAllContentControls',
+        null,
+        function (data: any) {
+          data.forEach((item: any) => {
+            if (item.InternalId === parentId) {
+              const itemTag = JSON.parse(item?.Tag || '{}')
+              console.log(itemTag)
+            }
+          })
+        }
+      )
+      return parentType
+    }, [currentControl])
     const changeValue = () => {
       elementStruct.setData((prev) => ({
         ...prev,
@@ -42,7 +55,7 @@ export default function ElementCompHOC(
           </div>
         )}
         <Element />
-        {!parentId && (
+        {parentType !== '8' && (
           <>
             <Condition />
             {type !== 5 && type !== 8 && <Document />}

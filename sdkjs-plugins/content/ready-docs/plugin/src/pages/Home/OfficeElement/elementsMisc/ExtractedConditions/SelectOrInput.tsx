@@ -42,7 +42,6 @@ const SelectOrInput = ({ type, condition }: InputProps) => {
     const condition = elementStruct.data[conditionName].find(
       (item) => item.id === id
     )
-    console.log(condition.operatorType)
     if (condition.operatorType === 0) {
       changeElementStruct(conditionName, value, id, 'value')
     } else if (!isNaN(+value)) {

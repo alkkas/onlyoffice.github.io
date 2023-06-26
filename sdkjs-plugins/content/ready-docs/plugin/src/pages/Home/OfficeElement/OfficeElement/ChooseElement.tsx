@@ -1,11 +1,10 @@
-import { FieldAttributes, useField } from 'formik'
+import SelectElement from 'components/SelectElement'
+import { FieldAttributes } from 'formik'
 import { useContext } from 'react'
-import CreatableSelect from 'react-select/creatable'
 import { Element } from 'types/types'
 import { v4 as uuid } from 'uuid'
 import { CurrentElementContext, ElementsContext } from '.'
-import { selectElementsProps, typeOptionsType } from '../ElementPropsStatic'
-import { defaultElementStruct } from './index'
+import { typeOptionsType } from '../ElementPropsStatic'
 
 type ChooseElementProps = {
   noOptionsMsg: string
@@ -17,36 +16,38 @@ const ChooseElement = ({
   noOptionsMsg,
   isCCPartOfComplexList,
   elementStructTypeOption,
-  ...props
 }: ChooseElementProps) => {
-  const [field, meta, helper] = useField(props)
-
   const elementsData = useContext(ElementsContext)
   const currentElement = useContext(CurrentElementContext)
 
   const changeElement = (option: Element) => {
-    helper.setValue(option.Title)
-    // Asc.plugin.executeMethod(
-    //   'GetCurrentContentControlPr',
-    //   [],
-    //   function (obj: any) {
-    //     const tag = JSON.parse(obj.Tag)
-    //     tag.elementTitle = option.Title
-    //     Asc.plugin.executeMethod('InsertAndReplaceContentControls', [
-    //       [
-    //         {
-    //           Props: {
-    //             Id: uuid(),
-    //             Lock: 3,
-    //             Tag: JSON.stringify(tag),
-    //             InternalId: obj.InternalId,
-    //             Alias: option.Title,
-    //           },
-    //         },
-    //       ],
-    //     ])
-    //   }
-    // )
+    Asc.plugin.executeMethod(
+      'GetCurrentContentControlPr',
+      [],
+      function (obj: any) {
+        const tag = JSON.parse(obj.Tag)
+        tag.elementTitle = option.Title
+        console.log(option)
+        Asc.plugin.executeMethod('InsertAndReplaceContentControls', [
+          [
+            {
+              Props: {
+                Id: uuid(),
+                Lock: 3,
+                Tag: JSON.stringify({
+                  ...tag,
+                  ...elementsData.find(
+                    (element) => element.Title === option.Title
+                  )?.Struct,
+                }),
+                InternalId: obj.InternalId,
+                Alias: option.Title,
+              },
+            },
+          ],
+        ])
+      }
+    )
     currentElement.setData(option)
   }
 
@@ -61,36 +62,25 @@ const ChooseElement = ({
   const getNewOption = (_: string, optionLabel: string) => ({
     Title: optionLabel,
     Id: uuid(),
-    Struct: defaultElementStruct,
+    Struct: currentElement.data.Struct,
     Type: elementStructTypeOption?.type,
     isChanged: null as string,
   })
 
   return (
-    <div className="select-container">
+    <>
       {currentElement.data.Type !== '9' && (
-        <CreatableSelect
-          {...field}
-          {...props}
-          {...selectElementsProps}
+        <SelectElement
           noOptionsMessage={() => noOptionsMsg}
           options={selectOptions}
           className="element-props__select"
           onChange={(option: Element) => changeElement(option)}
           value={selectValue}
           getNewOptionData={getNewOption}
-          classNames={{
-            control: () => {
-              return meta.error && 'element-props__select--error'
-            },
-            ...selectElementsProps.classNames,
-          }}
+          selectType="createSelect"
         />
       )}
-      {meta.touched && meta.error && (
-        <span className="element-props__error--msg">{meta.error}</span>
-      )}
-    </div>
+    </>
   )
 }
 export default ChooseElement

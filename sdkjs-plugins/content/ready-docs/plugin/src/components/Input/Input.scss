@@ -1,22 +1,15 @@
 .input__error {
   color: var(--red);
-  position: absolute;
-  bottom: -5px;
   font-size: 12px;
 }
 .input-container {
-  padding-bottom: 13px;
   position: relative;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
+  input {
+    width: 100%;
+  }
 }
-.input--login {
-  margin-top: 3px;
-  width: 200px;
+.input--error {
+  border: 1px solid var(--red);
 }
 .input__label {
   font-size: 14px;

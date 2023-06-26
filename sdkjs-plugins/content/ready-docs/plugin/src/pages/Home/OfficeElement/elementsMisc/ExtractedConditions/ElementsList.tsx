@@ -1,6 +1,5 @@
-import Select from 'components/Select'
+import SelectElement from 'components/SelectElement'
 import useChangeElementStruct from 'hooks/useChangeElementStruct'
-import { selectElementsProps } from 'pages/Home/OfficeElement/ElementPropsStatic'
 import { useContext } from 'react'
 import { Element, ElementStructCondition } from 'types/types'
 import { ElementsContext } from '../../OfficeElement'
@@ -26,13 +25,13 @@ const ElementsList = ({ condition }: ElementListProps) => {
   }
 
   return (
-    <Select
-      {...selectElementsProps}
-      options={elements}
+    <SelectElement
+      options={elements.filter((element) => element.Type !== '9')}
       value={elements.find(
         (element) => condition.elementName === element.Title
       )}
-      onChange={(option) => changeElement(option, condition)}
+      onChange={(option: Element) => changeElement(option, condition)}
+      selectType="select"
     />
   )
 }

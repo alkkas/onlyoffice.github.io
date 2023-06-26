@@ -1,3 +1,4 @@
+import { animated, useTransition } from '@react-spring/web'
 import Button from 'components/Button'
 import DeleteButton from 'components/DeleteButton/DeleteButton'
 import { ElementStructContext } from 'pages/Home/OfficeElement/OfficeElement'
@@ -25,7 +26,6 @@ function ExtractedConditions({ type }: { type: conditionsType }) {
   type ConditionsType = DocumentCondition[] | ElementStructCondition[]
   const conditionName = conditionsNames[type]
   const elementStruct = useContext(ElementStructContext)
-
   const setConditions = (func: (prev: ConditionsType) => ConditionsType) => {
     const newConditions = func(elementStruct.data[conditionName])
     elementStruct.setData((prev) => ({
@@ -76,14 +76,23 @@ function ExtractedConditions({ type }: { type: conditionsType }) {
     }))
   }, [])
 
+  const conditions = elementStruct.data[conditionName]
+
+  const transitions = useTransition(conditions, {
+    from: { opacity: 0, x: 0 },
+    enter: { opacity: 1, x: 0 },
+    leave: { opacity: 0, x: -100 },
+    keys: conditions.map((item, _) => item.id),
+  })
+
   return (
     <div style={{ marginTop: 10 }}>
-      {elementStruct.data[conditionName].map((condition) => (
-        <div
+      {transitions((style, condition, _) => (
+        <animated.div
+          style={style}
           className={`condition__block ${
             type === 'document' ? 'condition__block--blue-border' : ''
           }`}
-          key={condition.id}
         >
           {type === 'condition' ? (
             <ElementsList condition={condition} />
@@ -100,7 +109,7 @@ function ExtractedConditions({ type }: { type: conditionsType }) {
             className="condition__delete-button"
             onClick={() => deleteCondition(condition.id)}
           />
-        </div>
+        </animated.div>
       ))}
       <Button
         onClick={addCondition}

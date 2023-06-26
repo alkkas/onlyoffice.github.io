@@ -1,7 +1,7 @@
 import React from 'react'
 type ButtonProps = {
   children?: JSX.Element | string
-  type?: 'primary' | 'submit'
+  type?: 'primary' | 'submit' | 'button'
 }
 
 const Button = ({
@@ -12,6 +12,7 @@ const Button = ({
   return (
     <button
       {...props}
+      type={type}
       className={`btn-text-default ${type || ''} ${props.className}`}
     >
       {children}

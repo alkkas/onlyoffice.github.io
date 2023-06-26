@@ -1,6 +1,5 @@
 import { getElements, saveElement } from 'api/api'
 import Button from 'components/Button'
-import { Form, Formik } from 'formik'
 import { isEqual } from 'lodash'
 import { TemplateContext } from 'pages/Home/Home'
 import {
@@ -14,18 +13,15 @@ import {
 } from 'react'
 import { useMutation } from 'react-query'
 import { toast } from 'react-toastify'
-import { Element, ElementStruct } from 'types/types'
+import { Element, ElementStruct, ElementStructCondition } from 'types/types'
 import { pipeComponents } from 'utils/utils'
 import { v4 as uuid } from 'uuid'
 import ElementCompHOC from '../ElementCompHOC'
 import { complexListItemOptions, typeOptions } from '../ElementPropsStatic'
+import '../OfficeElement.styles.scss'
 import ChooseElement from './ChooseElement'
 import { ChooseType } from './ChooseType'
 import { useIsCCPartOfComplexList } from './OfficeElementHooks'
-import officeSchema from './OfficeElementSchema'
-
-import '../OfficeElement.styles.scss'
-
 // TODO MAYBE IN FUTURE CREATE TEXTAREA FIELD FOR CHOOSING AND ADDING NEW FLAGS
 // TODO element.Struct.case exist for every element should be existing only for input elements
 // const Input = (props: InputProps<any, true>) => {
@@ -37,9 +33,9 @@ import '../OfficeElement.styles.scss'
 //     </>
 //   )
 // }
-
-const initialValues = {
-  chooseElement: '',
+type initialValuesType = {
+  chooseElement: string
+  conditions: ElementStructCondition[]
 }
 
 export const defaultElementStruct: ElementStruct = {
@@ -299,7 +295,12 @@ export default ({ categoryId }: { categoryId: string }) => {
       setCurrentElement((prev) => ({ ...prev, Struct: struct }))
     }
   }
-
+  const initialValues: initialValuesType = useMemo(() => {
+    return {
+      chooseElement: currentElement.Title,
+      conditions: currentElement.Struct.displayConditions,
+    }
+  }, [currentElement])
   const fieldDisabled =
     !templateIds?.length || elementChanges.isLoading || !elementsData?.length
 
@@ -311,68 +312,65 @@ export default ({ categoryId }: { categoryId: string }) => {
           Выберите категорию для редактирования элемента!
         </p>
       )}
-      <Formik
-        initialValues={initialValues}
-        onSubmit={saveChanges}
-        validationSchema={officeSchema}
-      >
-        <Form>
-          {true && (
-            <fieldset
-              className="office-element__fieldset"
-              disabled={fieldDisabled}
-            >
-              {pipeComponents(
-                { Component: ElementsContext, value: elementsData },
-                {
-                  Component: CurrentElementContext,
-                  value: { data: currentElement, setData: setCurrentElement },
-                }
-              )(
-                <ChooseElement
-                  noOptionsMsg={noOptionsMsg}
-                  isCCPartOfComplexList={isCCPartOfComplexList}
-                  elementStructTypeOption={elementStructTypeOption}
-                  name="chooseElement"
-                />
-              )}
 
-              <p style={{ marginBottom: 5 }}>Тип Элемента:</p>
-
-              <CurrentElementContext.Provider
-                value={{ data: currentElement, setData: setCurrentElement }}
-              >
-                <ChooseType
-                  isCCPartOfComplexList={isCCPartOfComplexList}
-                  elementStructTypeOption={elementStructTypeOption}
-                />
-              </CurrentElementContext.Provider>
-
-              {pipeComponents(
-                { Component: ControlContext, value: currentControl },
-                { Component: ElementsContext, value: elementsData },
-                {
-                  Component: ElementStructContext,
-                  value: { data: elementStruct, setData: setElementStruct },
-                }
-              )(<ElementComp />)}
-
-              <Button
-                type="submit"
-                className="submit"
-                style={{ marginTop: 20 }}
-                disabled={isEqual(defaultElementData.current, currentElement)}
-              >
-                Сохранить изменения
-              </Button>
-            </fieldset>
+      {propsIsActive && (
+        <fieldset className="office-element__fieldset" disabled={fieldDisabled}>
+          {pipeComponents(
+            { Component: ElementsContext, value: elementsData },
+            {
+              Component: CurrentElementContext,
+              value: { data: currentElement, setData: setCurrentElement },
+            }
+          )(
+            <ChooseElement
+              noOptionsMsg={noOptionsMsg}
+              isCCPartOfComplexList={isCCPartOfComplexList}
+              elementStructTypeOption={elementStructTypeOption}
+            />
           )}
 
-          <Button className="office-element__btn submit" onClick={addElement}>
-            Создать элемент
+          <p style={{ marginBottom: 5 }}>Тип Элемента:</p>
+
+          <CurrentElementContext.Provider
+            value={{ data: currentElement, setData: setCurrentElement }}
+          >
+            <ChooseType
+              isCCPartOfComplexList={isCCPartOfComplexList}
+              elementStructTypeOption={elementStructTypeOption}
+            />
+          </CurrentElementContext.Provider>
+
+          {pipeComponents(
+            { Component: ControlContext, value: currentControl },
+            { Component: ElementsContext, value: elementsData },
+            {
+              Component: ElementStructContext,
+              value: { data: elementStruct, setData: setElementStruct },
+            }
+          )(<ElementComp />)}
+
+          <Button
+            type="submit"
+            className="submit"
+            style={{ marginTop: 20 }}
+            disabled={
+              isEqual(defaultElementData.current, currentElement) ||
+              elementChanges.isLoading
+            }
+            onClick={saveChanges}
+          >
+            Сохранить изменения
           </Button>
-        </Form>
-      </Formik>
+        </fieldset>
+      )}
+
+      <Button
+        type="button"
+        className="office-element__btn submit"
+        onClick={addElement}
+      >
+        Создать элемент
+      </Button>
     </>
   )
 }

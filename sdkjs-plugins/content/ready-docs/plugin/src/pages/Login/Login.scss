@@ -8,7 +8,17 @@
   &__form {
     display: flex;
     justify-content: center;
+    align-items: center;
     flex-direction: column;
     gap: 20px;
   }
+}
+.login-input__container {
+  padding-bottom: 13px;
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
